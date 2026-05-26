@@ -1,4 +1,5 @@
 import { z } from "zod";
+import "dotenv/config";
 
 const envSchema = z.object({
   AWS_REGION: z.string().default("ap-northeast-2"),

@@ -104,8 +104,23 @@ export const incrementUsage = async (
   const usageDate = getTodayDate();
   const ttl = getTtlAfterDays(30);
 
-  const countField =
-    input.type === "correction" ? "correctionCount" : "conversationCount";
+  const isCorrection = input.type === "correction";
+
+  const updateExpression = isCorrection
+    ? `
+      SET
+        #ttl = if_not_exists(#ttl, :ttl),
+        #correctionCount = if_not_exists(#correctionCount, :zero) + :one,
+        #conversationCount = if_not_exists(#conversationCount, :zero),
+        #totalCount = if_not_exists(#totalCount, :zero) + :one
+    `
+    : `
+      SET
+        #ttl = if_not_exists(#ttl, :ttl),
+        #correctionCount = if_not_exists(#correctionCount, :zero),
+        #conversationCount = if_not_exists(#conversationCount, :zero) + :one,
+        #totalCount = if_not_exists(#totalCount, :zero) + :one
+    `;
 
   const result = await documentClient.send(
     new UpdateCommand({
@@ -114,20 +129,12 @@ export const incrementUsage = async (
         userId: input.userId,
         usageDate,
       },
-      UpdateExpression: `
-        SET
-          #ttl = if_not_exists(#ttl, :ttl),
-          #correctionCount = if_not_exists(#correctionCount, :zero),
-          #conversationCount = if_not_exists(#conversationCount, :zero),
-          #totalCount = if_not_exists(#totalCount, :zero) + :one,
-          #targetCount = if_not_exists(#targetCount, :zero) + :one
-      `,
+      UpdateExpression: updateExpression,
       ExpressionAttributeNames: {
         "#ttl": "ttl",
         "#correctionCount": "correctionCount",
         "#conversationCount": "conversationCount",
         "#totalCount": "totalCount",
-        "#targetCount": countField,
       },
       ExpressionAttributeValues: {
         ":ttl": ttl,

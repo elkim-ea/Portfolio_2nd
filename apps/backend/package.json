@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsx src/handlers/health.ts",
     "build": "esbuild src/handlers/*.ts --bundle --platform=node --target=node20 --outdir=dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "invoke:correction": "tsx scripts/invoke-correction.ts"
   },
   "keywords": [],
   "author": "",

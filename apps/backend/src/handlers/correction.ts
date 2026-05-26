@@ -31,7 +31,9 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     if (error instanceof ZodError) {
       return badRequest(formatZodError(error));
     }
-
+    console.error("Correction handler error:", error);
+    
     return internalServerError();
   }
+  
 };

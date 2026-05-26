@@ -39,31 +39,11 @@ Terraform으로 생성하려던 DynamoDB 테이블은 다음 2개였다.
 
 <img src="./images/terraform-invalid-client-token-id.png" width="800">
 
-이어 AWS STS 인증 오류가 발생했다.
-
-```text
-Error: Retrieving AWS account details: validating provider credentials:
-retrieving caller identity from STS:
-operation error STS: GetCallerIdentity,
-https response error StatusCode: 403,
-api error InvalidClientTokenId:
-The security token included in the request is invalid.
-```
-
 ---
 
 ## 5. 문제 판단
 
 처음에는 Terraform provider 설정 문제처럼 보였지만, 실제 핵심은 아래 오류였다.
-
-```text
-InvalidClientTokenId:
-The security token included in the request is invalid.
-```
-
-Terraform AWS Provider는 리소스를 생성하기 전에 AWS STS `GetCallerIdentity`를 호출하여 현재 인증 정보가 유효한지 확인한다.
-
-따라서 Terraform 문제인지 AWS 인증 문제인지 분리하기 위해 AWS CLI에서 직접 STS 호출을 실행했다.
 
 아래 화면은 Terraform 외부에서 AWS CLI 인증 상태를 직접 확인한 결과이다.  
 동일하게 `InvalidClientTokenId`가 발생했기 때문에 문제 원인이 Terraform 코드가 아니라 AWS Credential이라는 것을 확인할 수 있었다.
@@ -241,5 +221,7 @@ terraform apply
 
 ## 12. 포트폴리오용 요약
 
-Terraform으로 DynamoDB 리소스를 생성하는 과정에서 로컬 AWS CLI의 오래된 Credential로 인해 STS `InvalidClientTokenId` 오류가 발생했다. `aws sts get-caller-identity`로 Terraform 외부에서 인증 문제를 분리했고, 로컬 AWS credentials/config를 초기화한 뒤 IAM User Access Key를 재발급하여 문제를 해결했다. 이후 Terraform plan/apply를 통해 DynamoDB 테이블 2개를 정상 생성했다.
+Terraform으로 DynamoDB 리소스를 생성하는 과정에서 로컬 AWS CLI의 오래된 Credential로 인해 STS `InvalidClientTokenId` 오류가 발생했다.            
+`aws sts get-caller-identity`로 Terraform 외부에서 인증 문제를 분리했고, 로컬 AWS credentials/config를 초기화한 뒤 IAM User Access Key를 재발급하여 문제를 해결했다.        
+이후 Terraform plan/apply를 통해 DynamoDB 테이블 2개를 정상 생성했다.        
 
