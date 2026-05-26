@@ -133,7 +133,7 @@ console.log("Body:", result.body);
 
 ## 6. 최초 실행 결과: 500 오류 발생
 
-아래의 화면은 처음 로컬 invoke 실행 시 다음과 같이 `500 Internal Server Error`가 발생했다는 걸 보여준것이다.
+아래의 화면은 처음 로컬 invoke 실행 시 다음과 같이 `500 Internal Server Error`가 발생했다는 걸 보여준다.
 
 <img src="./images/500 Internal Server Error.png" width="800">
 
