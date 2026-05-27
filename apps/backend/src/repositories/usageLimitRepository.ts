@@ -27,7 +27,7 @@ export type IncrementUsageInput = {
   type: UsageType;
 };
 
-const DAILY_USAGE_LIMITS = {
+export const DAILY_USAGE_LIMITS = {
   correction: 10,
   conversation: 10,
   total: 20,
@@ -41,12 +41,23 @@ const dynamoDbClient = new DynamoDBClient({
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDbClient);
 
-const getTodayDate = (): string => {
+export const getTodayDate = (): string => {
   return new Date().toISOString().slice(0, 10);
 };
 
 const getTtlAfterDays = (days: number): number => {
   return Math.floor(Date.now() / 1000) + 60 * 60 * 24 * days;
+};
+
+const createEmptyUsage = (userId: string, usageDate: string): UsageLimit => {
+  return {
+    userId,
+    usageDate,
+    correctionCount: 0,
+    conversationCount: 0,
+    totalCount: 0,
+    ttl: getTtlAfterDays(30),
+  };
 };
 
 export class UsageLimitExceededError extends Error {
@@ -56,26 +67,30 @@ export class UsageLimitExceededError extends Error {
   }
 }
 
-export const checkUsageLimit = async (
-  input: CheckUsageLimitInput,
-): Promise<void> => {
+export const getTodayUsage = async (userId: string): Promise<UsageLimit> => {
   const usageDate = getTodayDate();
 
   const result = await documentClient.send(
     new GetCommand({
       TableName: env.USAGE_LIMITS_TABLE_NAME,
       Key: {
-        userId: input.userId,
+        userId,
         usageDate,
       },
     }),
   );
 
-  const usage = result.Item as UsageLimit | undefined;
-
-  if (!usage) {
-    return;
+  if (!result.Item) {
+    return createEmptyUsage(userId, usageDate);
   }
+
+  return result.Item as UsageLimit;
+};
+
+export const checkUsageLimit = async (
+  input: CheckUsageLimitInput,
+): Promise<void> => {
+  const usage = await getTodayUsage(input.userId);
 
   if (usage.totalCount >= DAILY_USAGE_LIMITS.total) {
     throw new UsageLimitExceededError();

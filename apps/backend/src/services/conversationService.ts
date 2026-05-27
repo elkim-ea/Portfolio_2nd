@@ -4,6 +4,7 @@ import {
   checkUsageLimit,
   incrementUsage,
 } from "../repositories/usageLimitRepository.js";
+import { getOrCreateUserProfile } from "./profileService.js";
 
 export type ConversationInput = {
   topic: string;
@@ -16,13 +17,16 @@ export type ConversationMessage = {
 
 export type ConversationResult = {
   topic: string;
+  level: string;
   conversation: ConversationMessage[];
 };
 
 export const generateConversation = async (
   input: ConversationInput,
 ): Promise<ConversationResult> => {
-  const userId = "dev-user";
+  const userId = "dev-user-001";
+
+  const profile = await getOrCreateUserProfile(userId);
 
   await checkUsageLimit({
     userId,
@@ -31,7 +35,17 @@ export const generateConversation = async (
 
   const result = await generateText({
     task: "conversation",
-    prompt: input.topic,
+    prompt: `
+User Korean level: ${profile.levelLabel}
+Conversation tone: ${profile.conversationTone}
+Learning goal: ${profile.learningGoal}
+
+Create a Korean conversation for this situation.
+Use vocabulary and sentence length appropriate for the user's level.
+
+Situation:
+${input.topic}
+    `.trim(),
   });
 
   await incrementUsage({
@@ -45,10 +59,12 @@ export const generateConversation = async (
     inputText: input.topic,
     outputText: result.outputText,
     topic: input.topic,
+    level: profile.levelLabel,
   });
 
   return {
     topic: input.topic,
+    level: profile.levelLabel,
     conversation: [
       {
         role: "teacher",

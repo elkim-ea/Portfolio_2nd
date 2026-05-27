@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, } from "@aws-sdk/lib-dynamodb";
 import { getEnv } from "../config/env.js";
 
-export type LearningRecordType = "correction" | "conversation";
+export type LearningRecordType = "correction" | "conversation" | "level-test";
 
 export type SaveLearningRecordInput = {
   userId: string;
@@ -11,6 +11,7 @@ export type SaveLearningRecordInput = {
   inputText: string;
   outputText: string;
   topic?: string;
+  level?: string;
 };
 
 export type LearningRecord = {
@@ -20,6 +21,7 @@ export type LearningRecord = {
   inputText: string;
   outputText: string;
   topic?: string;
+  level?: string;
   createdAt: string;
 };
 
@@ -51,6 +53,7 @@ export const saveLearningRecord = async (
     outputText: input.outputText,
     createdAt,
     ...(input.topic ? { topic: input.topic } : {}),
+    ...(input.level ? { level: input.level } : {}),
   };
 
   await documentClient.send(
@@ -63,4 +66,23 @@ export const saveLearningRecord = async (
   );
 
   return record;
+};
+
+export const findLearningRecordsByUserId = async (
+  userId: string,
+  limit = 20,
+): Promise<LearningRecord[]> => {
+  const result = await documentClient.send(
+    new QueryCommand({
+      TableName: env.LEARNING_RECORDS_TABLE_NAME,
+      KeyConditionExpression: "userId = :userId",
+      ExpressionAttributeValues: {
+        ":userId": userId,
+      },
+      ScanIndexForward: false,
+      Limit: limit,
+    }),
+  );
+
+  return (result.Items ?? []) as LearningRecord[];
 };
