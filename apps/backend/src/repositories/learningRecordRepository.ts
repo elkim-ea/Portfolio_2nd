@@ -1,6 +1,10 @@
 import { randomUUID } from "crypto";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, QueryCommand, } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  QueryCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { getEnv } from "../config/env.js";
 
 export type LearningRecordType = "correction" | "conversation" | "level-test";
@@ -10,8 +14,9 @@ export type SaveLearningRecordInput = {
   type: LearningRecordType;
   inputText: string;
   outputText: string;
-  topic?: string;
-  level?: string;
+  outputData?: unknown;
+  topic?: string | null;
+  level?: string | null;
 };
 
 export type LearningRecord = {
@@ -20,8 +25,9 @@ export type LearningRecord = {
   type: LearningRecordType;
   inputText: string;
   outputText: string;
-  topic?: string;
-  level?: string;
+  outputData?: unknown;
+  topic?: string | null;
+  level?: string | null;
   createdAt: string;
 };
 
@@ -52,6 +58,7 @@ export const saveLearningRecord = async (
     inputText: input.inputText,
     outputText: input.outputText,
     createdAt,
+    ...(input.outputData !== undefined ? { outputData: input.outputData } : {}),
     ...(input.topic ? { topic: input.topic } : {}),
     ...(input.level ? { level: input.level } : {}),
   };

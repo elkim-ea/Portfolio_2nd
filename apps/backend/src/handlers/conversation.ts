@@ -5,7 +5,7 @@ import {
   conversationRequestSchema,
   type ConversationRequestBody,
 } from "../validators/conversationValidator.js";
-import { badRequest, internalServerError, ok } from "../utils/http.js";
+import { badRequest, ok, serverError } from "../utils/http.js";
 import {
   InvalidJsonBodyError,
   parseJsonBody,
@@ -19,10 +19,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
     const result = await generateConversation(body);
 
-    return ok({
-      message: "Conversation API is working",
-      ...result,
-    });
+    return ok(result);
+
   } catch (error) {
     if (error instanceof InvalidJsonBodyError) {
       return badRequest(error.message);
@@ -32,6 +30,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       return badRequest(formatZodError(error));
     }
 
-    return internalServerError();
+    return serverError("Failed to generate conversation");
   }
 };

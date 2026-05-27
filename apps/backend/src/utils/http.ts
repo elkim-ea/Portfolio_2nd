@@ -1,32 +1,30 @@
-export type JsonResponseBody = Record<string, unknown> | unknown[];
+const defaultHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type,Authorization",
+  "Access-Control-Allow-Methods": "OPTIONS,GET,POST,PUT,DELETE",
+};
 
-export const jsonResponse = (
-  statusCode: number,
-  body: JsonResponseBody,
-) => {
+export const ok = (body: unknown) => {
   return {
-    statusCode,
-    headers: {
-      "content-type": "application/json",
-    },
+    statusCode: 200,
+    headers: defaultHeaders,
     body: JSON.stringify(body),
   };
 };
 
-export const ok = (body: JsonResponseBody) => {
-  return jsonResponse(200, body);
-};
-
 export const badRequest = (message: string) => {
-  return jsonResponse(400, {
-    error: "Bad Request",
-    message,
-  });
+  return {
+    statusCode: 400,
+    headers: defaultHeaders,
+    body: JSON.stringify({ message }),
+  };
 };
 
-export const internalServerError = () => {
-  return jsonResponse(500, {
-    error: "Internal Server Error",
-    message: "Unexpected server error",
-  });
+export const serverError = (message = "Internal server error") => {
+  return {
+    statusCode: 500,
+    headers: defaultHeaders,
+    body: JSON.stringify({ message }),
+  };
 };

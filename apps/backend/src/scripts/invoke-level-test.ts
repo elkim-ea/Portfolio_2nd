@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
-import { handler } from "../handlers/levelTest.js";
+import * as levelTest from "../handlers/levelTest.js";
 
 const event: APIGatewayProxyEventV2 = {
   version: "2.0",
@@ -28,8 +28,7 @@ const event: APIGatewayProxyEventV2 = {
     timeEpoch: Date.now(),
   },
   body: JSON.stringify({
-    inputText:
-      "안녕하세요. 저는 한국어를 공부하고 있어요. 한국 음식을 좋아해요.",
+    text: "안녕하세요. 저는 한국어를 공부하고 있어요. 한국 음식을 좋아해요.",
     learningGoal: "daily",
     explanationLanguage: "both",
   }),
@@ -37,10 +36,9 @@ const event: APIGatewayProxyEventV2 = {
 };
 
 async function main() {
-  const result = await handler(event);
+  const result = await levelTest.handler(event);
 
-  console.log("Status Code:", result.statusCode);
-  console.log("Body:", result.body);
+    console.log("Level Test Result:", result);
 }
 
 main().catch((error) => {

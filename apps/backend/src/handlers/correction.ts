@@ -5,7 +5,8 @@ import {
   correctionRequestSchema,
   type CorrectionRequestBody,
 } from "../validators/correctionValidator.js";
-import { badRequest, internalServerError, ok } from "../utils/http.js";
+import { badRequest, ok, serverError } from "../utils/http.js";
+
 import {
   InvalidJsonBodyError,
   parseJsonBody,
@@ -19,10 +20,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
     const result = await correctKoreanText(body);
 
-    return ok({
-      message: "Correction API is working",
-      ...result,
-    });
+    return ok(result);
+
   } catch (error) {
     if (error instanceof InvalidJsonBodyError) {
       return badRequest(error.message);
@@ -33,7 +32,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     }
     console.error("Correction handler error:", error);
     
-    return internalServerError();
+    return serverError("Failed to generate conversation");
   }
   
 };
