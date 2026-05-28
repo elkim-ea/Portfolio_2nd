@@ -32,7 +32,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     }
     console.error("Correction handler error:", error);
     
-    return serverError("Failed to generate conversation");
+    return serverError("Failed to correct Korean text");
   }
   
 };

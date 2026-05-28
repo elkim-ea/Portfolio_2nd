@@ -5,38 +5,38 @@ import Textarea from "../components/common/Textarea";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import type { LevelTestApiResponse } from "../types/aiResult";
+import { requestLevelTest } from "../api/levelTestApi";
 
 export default function LevelTestPage() {
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<LevelTestApiResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = () => {
-    const mockResponse: LevelTestApiResponse = {
-      type: "level-test",
-      inputText: answer,
-      result: {
-        estimatedLevel: "beginner",
-        levelLabel: "Beginner A2",
-        explanationEnglish:
-          "You can write simple Korean sentences, but your grammar range is still limited. You should continue practising tense, particles, and basic sentence patterns.",
-        weaknesses: [
-          "Limited sentence variety",
-          "Needs more practice with particles",
-          "Needs more tense consistency",
-        ],
-        nextActions: [
-          "Practise basic past tense forms.",
-          "Review common particles such as 은/는 and 을/를.",
-          "Use conversation practice with polite tone.",
-        ],
-      },
-      outputText: "",
-      level: "Beginner A2",
-    };
+  const handleSubmit = async () => {
+  const trimmedAnswer = answer.trim();
 
-    setResult(mockResponse);
-    alert(`Your Korean level is ${mockResponse.result.levelLabel}.`);
-  };
+  if (!trimmedAnswer) {
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+    setErrorMessage("");
+    setResult(null);
+
+    const data = await requestLevelTest({
+      text: trimmedAnswer,
+    });
+
+    setResult(data);
+  } catch (error) {
+    console.error("Failed to request level test:", error);
+    setErrorMessage("Failed to analyze your Korean level. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div>
@@ -62,9 +62,13 @@ export default function LevelTestPage() {
               placeholder="예: 오늘 저는 학교에 갔어요..."
             />
 
-            <Button onClick={handleSubmit} disabled={!answer.trim()}>
-              Analyze My Level
+            <Button onClick={handleSubmit} disabled={!answer.trim() || isLoading}>
+             {isLoading ? "Analyzing..." : "Analyze My Level"}
             </Button>
+
+            {errorMessage && (
+            <p className="text-sm font-medium text-red-500">{errorMessage}</p>
+            )}
           </div>
         </Card>
 
@@ -74,11 +78,15 @@ export default function LevelTestPage() {
             {result && <Badge tone="blue">{result.result.levelLabel}</Badge>}
           </div>
 
-          {!result ? (
+          {isLoading ? (
             <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-              Your level test result will appear here.
+                Analyzing your Korean level...
             </div>
-          ) : (
+            ) : !result ? (
+            <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+                Your level test result will appear here.
+            </div>
+            ) : (
             <div className="mt-4 space-y-4">
               <section className="rounded-xl bg-blue-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-blue-500">
@@ -120,7 +128,9 @@ export default function LevelTestPage() {
                 </ul>
               </section>
 
-              <Button variant="secondary">Apply to Profile</Button>
+              <Button variant="secondary" disabled>
+                Apply to Profile
+              </Button>
             </div>
           )}
         </Card>

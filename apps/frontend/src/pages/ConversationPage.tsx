@@ -4,60 +4,43 @@ import PageHeader from "../components/common/PageHeader";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import type { ConversationApiResponse } from "../types/aiResult";
+import { requestConversation } from "../api/conversationApi";
+
 
 export default function ConversationPage() {
   const [topic, setTopic] = useState("ordering food at a restaurant");
   const [result, setResult] = useState<ConversationApiResponse | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  
   const koreanSpeechText = result
     ? result.result.lines.map((line) => line.korean).join(" ")
     : "";
 
-  const handleGenerate = () => {
-    const mockResponse: ConversationApiResponse = {
-      type: "conversation",
-      inputText: topic,
-      result: {
-        situation: topic,
-        lines: [
-          {
-            role: "teacher",
-            korean: "주문하시겠어요?",
-            romanization: "Jumunhasigesseoyo?",
-            englishMeaning: "Would you like to order?",
-          },
-          {
-            role: "student",
-            korean: "네, 김치찌개 하나 주세요.",
-            romanization: "Ne, gimchi jjigae hana juseyo.",
-            englishMeaning: "Yes, please give me one kimchi stew.",
-          },
-        ],
-        usefulExpressions: [
-          {
-            korean: "주문하시겠어요?",
-            romanization: "Jumunhasigesseoyo?",
-            englishMeaning: "Would you like to order?",
-            explanationEnglish:
-              "This is a polite phrase commonly used by restaurant staff.",
-          },
-          {
-            korean: "하나 주세요.",
-            romanization: "Hana juseyo.",
-            englishMeaning: "Please give me one.",
-            explanationEnglish:
-              "'주세요' is a polite request ending used when asking for something.",
-          },
-        ],
-        grammarTipEnglish:
-          "The ending '-주세요' is commonly used when politely asking for an item or action.",
-      },
-      outputText: "",
-      level: "Beginner A2",
-    };
+  const handleGenerate = async () => {
+  const trimmedTopic = topic.trim();
 
-    setResult(mockResponse);
-  };
+  if (!trimmedTopic) {
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+    setErrorMessage("");
+    setResult(null);
+
+    const data = await requestConversation({
+      topic: trimmedTopic,
+    });
+
+    setResult(data);
+  } catch (error) {
+    console.error("Failed to request conversation:", error);
+    setErrorMessage("Failed to generate conversation. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleSpeak = () => {
     if (!("speechSynthesis" in window)) {
@@ -111,9 +94,13 @@ export default function ConversationPage() {
               </select>
             </div>
 
-            <Button onClick={handleGenerate} disabled={!topic.trim()}>
-              Generate Conversation
+            <Button onClick={handleGenerate} disabled={!topic.trim() || isLoading}>
+            {isLoading ? "Generating..." : "Generate Conversation"}
             </Button>
+
+            {errorMessage && (
+            <p className="text-sm font-medium text-red-500">{errorMessage}</p>
+            )}
           </div>
         </Card>
 
@@ -123,16 +110,24 @@ export default function ConversationPage() {
               Conversation Result
             </h2>
 
-            <Button variant="secondary" onClick={handleSpeak} disabled={!result}>
-              Play Korean Audio
-            </Button>
+            <Button
+                variant="secondary"
+                onClick={handleSpeak}
+                disabled={!result || isLoading}
+                >
+                Play Korean Audio
+                </Button>
           </div>
 
-          {!result ? (
+          {isLoading ? (
             <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-              The generated conversation will appear here.
+                Generating conversation...
             </div>
-          ) : (
+            ) : !result ? (
+            <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+                The generated conversation will appear here.
+            </div>
+            ) : (
             <div className="mt-4 space-y-5">
               <section className="rounded-xl bg-slate-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
