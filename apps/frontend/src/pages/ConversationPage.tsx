@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../components/common/Card";
 import PageHeader from "../components/common/PageHeader";
 import Button from "../components/common/Button";
@@ -12,10 +12,29 @@ export default function ConversationPage() {
   const [result, setResult] = useState<ConversationApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
   const koreanSpeechText = result
     ? result.result.lines.map((line) => line.korean).join(" ")
     : "";
+  
+  useEffect(() => {
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  const loadVoices = () => {
+    setVoices(window.speechSynthesis.getVoices());
+  };
+
+  loadVoices();
+
+  window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+
+  return () => {
+    window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+  };
+}, []);
 
   const handleGenerate = async () => {
   const trimmedTopic = topic.trim();
@@ -42,19 +61,41 @@ export default function ConversationPage() {
   }
 };
 
-  const handleSpeak = () => {
-    if (!("speechSynthesis" in window)) {
-      alert("This browser does not support speech playback.");
-      return;
-    }
+const handleSpeak = () => {
+  const text = koreanSpeechText.trim();
 
-    const utterance = new SpeechSynthesisUtterance(koreanSpeechText);
-    utterance.lang = "ko-KR";
-    utterance.rate = 0.85;
+  if (!text) {
+    alert("There is no Korean text to play.");
+    return;
+  }
 
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+  if (!("speechSynthesis" in window)) {
+    alert("This browser does not support speech playback.");
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ko-KR";
+  utterance.rate = 0.85;
+  utterance.pitch = 1;
+
+  const koreanVoice = voices.find((voice) =>
+    voice.lang.toLowerCase().startsWith("ko"),
+  );
+
+  if (koreanVoice) {
+    utterance.voice = koreanVoice;
+  }
+
+  utterance.onerror = (event) => {
+    console.error("Speech synthesis error:", event);
+    alert("Failed to play Korean audio.");
   };
+
+  window.speechSynthesis.speak(utterance);
+};
 
   return (
     <div>
@@ -111,12 +152,11 @@ export default function ConversationPage() {
             </h2>
 
             <Button
-                variant="secondary"
-                onClick={handleSpeak}
-                disabled={!result || isLoading}
-                >
-                Play Korean Audio
-                </Button>
+            onClick={handleSpeak}
+            disabled={!result || !koreanSpeechText.trim() || isLoading}
+            >
+            Play Korean Audio
+            </Button>
           </div>
 
           {isLoading ? (

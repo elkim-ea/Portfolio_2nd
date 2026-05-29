@@ -1,3 +1,4 @@
+import "dotenv/config";
 import type { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { handler } from "../src/handlers/conversation.js";
 

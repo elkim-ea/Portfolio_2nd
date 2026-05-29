@@ -1,3 +1,8 @@
+import {
+  BedrockRuntimeClient,
+  ConverseCommand,
+} from "@aws-sdk/client-bedrock-runtime";
+
 export type GenerateTextInput = {
   task: "correction" | "conversation" | "level-test";
   prompt: string;
@@ -7,23 +12,57 @@ export type GenerateTextResult = {
   outputText: string;
 };
 
+const requiredEnv = (key: string): string => {
+  const value = process.env[key];
+
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+
+  return value;
+};
+
+const bedrockClient = new BedrockRuntimeClient({
+  region: requiredEnv("AWS_REGION"),
+});
+
 export const generateText = async (
   input: GenerateTextInput,
 ): Promise<GenerateTextResult> => {
-  if (input.task === "correction") {
-    return {
-      outputText: "여기에 Bedrock이 생성한 한국어 교정 결과가 들어갈 예정입니다.",
-    };
-  }
+  const modelId = requiredEnv("BEDROCK_MODEL_ID");
 
-  if (input.task === "conversation") {
-    return {
-      outputText: "여기에 Bedrock이 생성한 한국어 회화 결과가 들어갈 예정입니다.",
-    };
+  const command = new ConverseCommand({
+    modelId,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            text: input.prompt,
+          },
+        ],
+      },
+    ],
+    inferenceConfig: {
+      maxTokens: 1200,
+      temperature: 0.2,
+      topP: 0.9,
+    },
+  });
+
+  const response = await bedrockClient.send(command);
+
+  const outputText =
+    response.output?.message?.content
+      ?.map((content) => content.text ?? "")
+      .join("")
+      .trim() ?? "";
+
+  if (!outputText) {
+    throw new Error(`Bedrock returned an empty response for task: ${input.task}`);
   }
 
   return {
-    outputText:
-      "Estimated Level: Beginner A2\nReason: 기본적인 자기소개 표현은 가능하지만 문장 연결과 어휘 다양성이 아직 제한적입니다.",
+    outputText,
   };
 };

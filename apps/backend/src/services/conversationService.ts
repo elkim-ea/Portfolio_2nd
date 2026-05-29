@@ -9,6 +9,7 @@ import type {
   AiResponse,
   ConversationResultData,
 } from "../types/aiResult.js";
+import { parseAiJson } from "../utils/parseAiJson.js";
 
 export type ConversationInput = {
   topic?: string;
@@ -35,57 +36,45 @@ You are a Korean tutor for foreign learners.
 Create a short Korean conversation for this topic:
 ${topic}
 
-Return the answer with:
-1. Situation
-2. Teacher line in Korean
-3. Teacher romanization
-4. Teacher English meaning
-5. Student line in Korean
-6. Student romanization
-7. Student English meaning
-8. Useful expressions
-9. English grammar tip
-  `.trim();
+Return ONLY valid JSON.
+Do not include markdown.
+Do not include code fences.
+Do not include any text outside JSON.
+
+JSON schema:
+{
+  "situation": "string",
+  "lines": [
+    {
+      "role": "teacher",
+      "korean": "string",
+      "romanization": "string",
+      "englishMeaning": "string"
+    },
+    {
+      "role": "student",
+      "korean": "string",
+      "romanization": "string",
+      "englishMeaning": "string"
+    }
+  ],
+  "usefulExpressions": [
+    {
+      "korean": "string",
+      "romanization": "string",
+      "englishMeaning": "string",
+      "explanationEnglish": "string"
+    }
+  ],
+  "grammarTipEnglish": "string"
 }
 
-function buildMockStructuredConversation(
-  topic: string,
-): ConversationResultData {
-  return {
-    situation: topic,
-    lines: [
-      {
-        role: "teacher",
-        korean: "주문하시겠어요?",
-        romanization: "Jumunhasigesseoyo?",
-        englishMeaning: "Would you like to order?",
-      },
-      {
-        role: "student",
-        korean: "네, 김치찌개 하나 주세요.",
-        romanization: "Ne, gimchi jjigae hana juseyo.",
-        englishMeaning: "Yes, please give me one kimchi stew.",
-      },
-    ],
-    usefulExpressions: [
-      {
-        korean: "주문하시겠어요?",
-        romanization: "Jumunhasigesseoyo?",
-        englishMeaning: "Would you like to order?",
-        explanationEnglish:
-          "This is a polite phrase commonly used by restaurant staff.",
-      },
-      {
-        korean: "하나 주세요.",
-        romanization: "Hana juseyo.",
-        englishMeaning: "Please give me one.",
-        explanationEnglish:
-          "'주세요' is a polite request ending used when asking for something.",
-      },
-    ],
-    grammarTipEnglish:
-      "The ending '-주세요' is commonly used when politely asking for an item or action.",
-  };
+Rules:
+- lines must include at least 2 lines.
+- role must be only "teacher" or "student".
+- usefulExpressions must contain 2 to 4 items.
+- Korean should match the user's level.
+  `.trim();
 }
 
 function formatConversationOutput(result: ConversationResultData): string {
@@ -127,17 +116,19 @@ export const generateConversation = async (
     type: "conversation",
   });
 
-  await generateText({
-    task: "conversation",
-    prompt: buildConversationPrompt(
-      topic,
-      profile.levelLabel,
-      profile.conversationTone,
-      profile.explanationLanguage,
-    ),
-  });
+  const bedrockResult = await generateText({
+  task: "conversation",
+  prompt: buildConversationPrompt(
+    topic,
+    profile.levelLabel,
+    profile.conversationTone,
+    profile.explanationLanguage,
+  ),
+});
 
-  const structuredResult = buildMockStructuredConversation(topic);
+const structuredResult = parseAiJson<ConversationResultData>(
+  bedrockResult.outputText,
+);
   const outputText = formatConversationOutput(structuredResult);
 
   await incrementUsage({

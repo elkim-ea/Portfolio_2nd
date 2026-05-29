@@ -29,7 +29,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     if (error instanceof ZodError) {
       return badRequest(formatZodError(error));
     }
-
+    console.error("Conversation handler error:", error);
     return serverError("Failed to generate conversation");
   }
 };

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import * as levelTest from "../handlers/levelTest.js";
 
