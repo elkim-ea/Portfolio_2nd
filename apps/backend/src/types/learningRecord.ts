@@ -10,6 +10,6 @@ export type LearningRecord = {
   outputText: string;
   outputData?: unknown;
   topic?: string | null;
-  level?: LearningLevel | null;
+  level?: string | null;
   createdAt: string;
 };

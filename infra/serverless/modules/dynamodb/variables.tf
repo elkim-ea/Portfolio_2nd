@@ -13,3 +13,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "user_profiles_table_name" {
+  description = "DynamoDB table name for user profiles"
+  type        = string
+}
