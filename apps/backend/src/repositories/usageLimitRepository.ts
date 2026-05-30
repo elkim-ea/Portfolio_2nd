@@ -5,33 +5,13 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { getEnv } from "../config/env.js";
-
-export type UsageType = "correction" | "conversation";
-
-export type UsageLimit = {
-  userId: string;
-  usageDate: string;
-  correctionCount: number;
-  conversationCount: number;
-  totalCount: number;
-  ttl: number;
-};
-
-export type CheckUsageLimitInput = {
-  userId: string;
-  type: UsageType;
-};
-
-export type IncrementUsageInput = {
-  userId: string;
-  type: UsageType;
-};
-
-export const DAILY_USAGE_LIMITS = {
-  correction: 10,
-  conversation: 10,
-  total: 20,
-} as const;
+import {
+  DAILY_USAGE_LIMITS,
+  UsageLimitExceededError,
+  type CheckUsageLimitInput,
+  type IncrementUsageInput,
+  type UsageLimit,
+} from "../types/usageLimit.js";
 
 const env = getEnv();
 
@@ -55,17 +35,11 @@ const createEmptyUsage = (userId: string, usageDate: string): UsageLimit => {
     usageDate,
     correctionCount: 0,
     conversationCount: 0,
+    levelTestCount: 0,
     totalCount: 0,
     ttl: getTtlAfterDays(30),
   };
 };
-
-export class UsageLimitExceededError extends Error {
-  constructor(message = "Daily AI usage limit exceeded.") {
-    super(message);
-    this.name = "UsageLimitExceededError";
-  }
-}
 
 export const getTodayUsage = async (userId: string): Promise<UsageLimit> => {
   const usageDate = getTodayDate();
@@ -84,7 +58,17 @@ export const getTodayUsage = async (userId: string): Promise<UsageLimit> => {
     return createEmptyUsage(userId, usageDate);
   }
 
-  return result.Item as UsageLimit;
+  const item = result.Item as Partial<UsageLimit>;
+
+  return {
+    userId,
+    usageDate,
+    correctionCount: item.correctionCount ?? 0,
+    conversationCount: item.conversationCount ?? 0,
+    levelTestCount: item.levelTestCount ?? 0,
+    totalCount: item.totalCount ?? 0,
+    ttl: item.ttl ?? getTtlAfterDays(30),
+  };
 };
 
 export const checkUsageLimit = async (
@@ -111,6 +95,27 @@ export const checkUsageLimit = async (
       "Daily conversation usage limit exceeded.",
     );
   }
+
+  if (
+    input.type === "level-test" &&
+    usage.levelTestCount >= DAILY_USAGE_LIMITS.levelTest
+  ) {
+    throw new UsageLimitExceededError("Daily level test usage limit exceeded.");
+  }
+};
+
+const getCountAttributeName = (
+  type: IncrementUsageInput["type"],
+): "correctionCount" | "conversationCount" | "levelTestCount" => {
+  if (type === "correction") {
+    return "correctionCount";
+  }
+
+  if (type === "conversation") {
+    return "conversationCount";
+  }
+
+  return "levelTestCount";
 };
 
 export const incrementUsage = async (
@@ -118,24 +123,40 @@ export const incrementUsage = async (
 ): Promise<UsageLimit> => {
   const usageDate = getTodayDate();
   const ttl = getTtlAfterDays(30);
+  const countAttributeName = getCountAttributeName(input.type);
 
-  const isCorrection = input.type === "correction";
+  const expressionAttributeNames: Record<string, string> = {
+    "#ttl": "ttl",
+    "#totalCount": "totalCount",
+    "#targetCount": countAttributeName,
+  };
 
-  const updateExpression = isCorrection
-    ? `
-      SET
-        #ttl = if_not_exists(#ttl, :ttl),
-        #correctionCount = if_not_exists(#correctionCount, :zero) + :one,
-        #conversationCount = if_not_exists(#conversationCount, :zero),
-        #totalCount = if_not_exists(#totalCount, :zero) + :one
-    `
-    : `
-      SET
-        #ttl = if_not_exists(#ttl, :ttl),
-        #correctionCount = if_not_exists(#correctionCount, :zero),
-        #conversationCount = if_not_exists(#conversationCount, :zero) + :one,
-        #totalCount = if_not_exists(#totalCount, :zero) + :one
-    `;
+  const baseSetExpressions = [
+    "#ttl = if_not_exists(#ttl, :ttl)",
+    "#targetCount = if_not_exists(#targetCount, :zero) + :one",
+    "#totalCount = if_not_exists(#totalCount, :zero) + :one",
+  ];
+
+  if (countAttributeName !== "correctionCount") {
+    expressionAttributeNames["#correctionCount"] = "correctionCount";
+    baseSetExpressions.push(
+      "#correctionCount = if_not_exists(#correctionCount, :zero)",
+    );
+  }
+
+  if (countAttributeName !== "conversationCount") {
+    expressionAttributeNames["#conversationCount"] = "conversationCount";
+    baseSetExpressions.push(
+      "#conversationCount = if_not_exists(#conversationCount, :zero)",
+    );
+  }
+
+  if (countAttributeName !== "levelTestCount") {
+    expressionAttributeNames["#levelTestCount"] = "levelTestCount";
+    baseSetExpressions.push(
+      "#levelTestCount = if_not_exists(#levelTestCount, :zero)",
+    );
+  }
 
   const result = await documentClient.send(
     new UpdateCommand({
@@ -144,13 +165,8 @@ export const incrementUsage = async (
         userId: input.userId,
         usageDate,
       },
-      UpdateExpression: updateExpression,
-      ExpressionAttributeNames: {
-        "#ttl": "ttl",
-        "#correctionCount": "correctionCount",
-        "#conversationCount": "conversationCount",
-        "#totalCount": "totalCount",
-      },
+      UpdateExpression: `SET ${baseSetExpressions.join(", ")}`,
+      ExpressionAttributeNames: expressionAttributeNames,
       ExpressionAttributeValues: {
         ":ttl": ttl,
         ":zero": 0,

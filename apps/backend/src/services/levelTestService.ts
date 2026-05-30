@@ -1,6 +1,10 @@
 import { generateText } from "../external/bedrockClient.js";
 import { saveLearningRecord } from "../repositories/learningRecordRepository.js";
 import { getOrCreateUserProfile } from "./profileService.js";
+import {
+  checkUsageLimit,
+  incrementUsage,
+} from "../repositories/usageLimitRepository.js";
 import type {
   AiResponse,
   LevelTestResultData,
@@ -79,7 +83,12 @@ export const runLevelTest = async (
 
   const profile = await getOrCreateUserProfile(userId);
 
-  const bedrockResult = await generateText({
+await checkUsageLimit({
+  userId,
+  type: "level-test",
+});
+
+const bedrockResult = await generateText({
   task: "level-test",
   prompt: buildLevelTestPrompt(inputText, profile.explanationLanguage),
 });
@@ -90,14 +99,19 @@ const structuredResult = parseAiJson<LevelTestResultData>(
 
   const outputText = formatLevelTestOutput(structuredResult);
 
-  await saveLearningRecord({
-    userId,
-    type: "level-test",
-    inputText,
-    outputText,
-    outputData: structuredResult,
-    level: structuredResult.levelLabel,
-  });
+await incrementUsage({
+  userId,
+  type: "level-test",
+});
+
+await saveLearningRecord({
+  userId,
+  type: "level-test",
+  inputText,
+  outputText,
+  outputData: structuredResult,
+  level: structuredResult.levelLabel,
+});
 
   return {
     type: "level-test",
