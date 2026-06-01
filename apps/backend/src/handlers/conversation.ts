@@ -5,12 +5,13 @@ import {
   conversationRequestSchema,
   type ConversationRequestBody,
 } from "../validators/conversationValidator.js";
-import { badRequest, ok, serverError } from "../utils/http.js";
+import { badRequest, ok, serverError, tooManyRequests } from "../utils/http.js";
 import {
   InvalidJsonBodyError,
   parseJsonBody,
 } from "../utils/request.js";
 import { formatZodError } from "../utils/validation.js";
+import { UsageLimitExceededError } from "../types/usageLimit.js";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
@@ -29,6 +30,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     if (error instanceof ZodError) {
       return badRequest(formatZodError(error));
     }
+
+    if (error instanceof UsageLimitExceededError) {
+      return tooManyRequests("You have used all of today’s conversation practice attempts.");
+    }
+
     console.error("Conversation handler error:", error);
     return serverError("Failed to generate conversation");
   }

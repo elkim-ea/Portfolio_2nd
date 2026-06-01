@@ -19,7 +19,15 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || `API request failed: ${response.status}`);
+    let errorBody;
+    try {
+      errorBody = JSON.parse(errorText);
+    } catch {
+      errorBody = null;
+    }
+    throw new Error(
+      errorBody?.message || `API request failed: ${response.status}`,
+    );
   }
 
   return response.json() as Promise<T>;

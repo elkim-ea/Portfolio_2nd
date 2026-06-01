@@ -15,7 +15,8 @@
     "level-test": "tsx src/scripts/invoke-level-test.ts",
     "invoke:level-test": "tsx src/scripts/invoke-level-test.ts",
     "invoke:history": "tsx src/scripts/invoke-history.ts",
-    "invoke:usage": "tsx src/scripts/invoke-usage.ts"
+    "invoke:usage": "tsx src/scripts/invoke-usage.ts",
+    "package:lambda": "npm run build && node scripts/package-lambda.mjs"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.161",
     "@types/node": "^25.9.1",
+    "adm-zip": "^0.5.17",
     "esbuild": "^0.28.0",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3"

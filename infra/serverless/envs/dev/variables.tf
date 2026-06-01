@@ -17,3 +17,8 @@ variable "user_profiles_table_name" {
   description = "DynamoDB table name for user profiles"
   type        = string
 }
+
+variable "bedrock_model_id" {
+  description = "Amazon Bedrock model ID"
+  type        = string
+}

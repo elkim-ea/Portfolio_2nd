@@ -1,11 +1,10 @@
-import "dotenv/config";
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
-import * as levelTest from "../handlers/levelTest.js";
+import { handler } from "../src/handlers/history.js";
 
 const event: APIGatewayProxyEventV2 = {
   version: "2.0",
-  routeKey: "POST /level-test",
-  rawPath: "/level-test",
+  routeKey: "GET /history",
+  rawPath: "/history",
   rawQueryString: "",
   headers: {
     "content-type": "application/json",
@@ -16,30 +15,26 @@ const event: APIGatewayProxyEventV2 = {
     domainName: "localhost",
     domainPrefix: "localhost",
     http: {
-      method: "POST",
-      path: "/level-test",
+      method: "GET",
+      path: "/history",
       protocol: "HTTP/1.1",
       sourceIp: "127.0.0.1",
       userAgent: "local-test",
     },
     requestId: "local-request",
-    routeKey: "POST /level-test",
+    routeKey: "GET /history",
     stage: "$default",
     time: new Date().toISOString(),
     timeEpoch: Date.now(),
   },
-  body: JSON.stringify({
-    text: "안녕하세요. 저는 한국어를 공부하고 있어요. 한국 음식을 좋아해요.",
-    learningGoal: "daily",
-    explanationLanguage: "both",
-  }),
   isBase64Encoded: false,
 };
 
 async function main() {
-  const result = await levelTest.handler(event);
+  const result = await handler(event);
 
-    console.log("Level Test Result:", result);
+  console.log("Status Code:", result.statusCode);
+  console.log("Body:", result.body);
 }
 
 main().catch((error) => {

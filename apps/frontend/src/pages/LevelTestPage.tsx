@@ -32,7 +32,11 @@ export default function LevelTestPage() {
     setResult(data);
   } catch (error) {
     console.error("Failed to request level test:", error);
-    setErrorMessage("Failed to analyze your Korean level. Please try again.");
+    setErrorMessage(
+  error instanceof Error
+    ? error.message
+    : "Failed to correct your Korean text. Please try again.",
+);
   } finally {
     setIsLoading(false);
   }

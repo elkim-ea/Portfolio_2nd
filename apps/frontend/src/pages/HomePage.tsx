@@ -4,19 +4,19 @@ import Card from "../components/common/Card";
 const features = [
   {
     title: "Level Test",
-    description: "가벼운 진단으로 기본 학습 레벨을 자동 설정합니다.",
+    description: "Set your learning level automatically with a quick assessment.",
   },
   {
     title: "Writing Correction",
-    description: "AI가 한국어 문장을 자연스럽게 교정합니다.",
+    description: "AI helps correct your Korean sentences naturally.",
   },
   {
     title: "Conversation Practice",
-    description: "상황별 한국어 회화를 생성합니다.",
+    description: "Generate Korean conversation practice for real-life situations.",
   },
   {
     title: "Learning History",
-    description: "학습 기록을 저장하고 다시 확인합니다.",
+    description: "Save your learning records and review them anytime.",
   },
 ];
 
@@ -29,7 +29,7 @@ export default function HomePage() {
         </h1>
 
         <p className="mt-6 max-w-3xl text-xl font-medium text-slate-500">
-          한국어 글쓰기 교정, 회화 연습, 레벨 진단을 한 곳에서 관리하세요.
+          Manage Korean writing correction, conversation practice, and level assessment in one place.
         </p>
 
         <Link

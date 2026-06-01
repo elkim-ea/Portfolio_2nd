@@ -55,7 +55,11 @@ export default function ConversationPage() {
     setResult(data);
   } catch (error) {
     console.error("Failed to request conversation:", error);
-    setErrorMessage("Failed to generate conversation. Please try again.");
+    setErrorMessage(
+  error instanceof Error
+    ? error.message
+    : "Failed to correct your Korean text. Please try again.",
+);
   } finally {
     setIsLoading(false);
   }

@@ -1,10 +1,10 @@
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
-import { handler } from "../handlers/history.js";
+import { handler } from "../src/handlers/usage.js";
 
 const event: APIGatewayProxyEventV2 = {
   version: "2.0",
-  routeKey: "GET /history",
-  rawPath: "/history",
+  routeKey: "GET /usage",
+  rawPath: "/usage",
   rawQueryString: "",
   headers: {
     "content-type": "application/json",
@@ -16,13 +16,13 @@ const event: APIGatewayProxyEventV2 = {
     domainPrefix: "localhost",
     http: {
       method: "GET",
-      path: "/history",
+      path: "/usage",
       protocol: "HTTP/1.1",
       sourceIp: "127.0.0.1",
       userAgent: "local-test",
     },
     requestId: "local-request",
-    routeKey: "GET /history",
+    routeKey: "GET /usage",
     stage: "$default",
     time: new Date().toISOString(),
     timeEpoch: Date.now(),

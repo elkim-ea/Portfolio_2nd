@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
-import { handler } from "../handlers/profile.js";
+import { handler } from "../src/handlers/profile.js";
 
 function createEvent(
   method: "GET" | "PUT",

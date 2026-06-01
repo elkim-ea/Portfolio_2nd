@@ -32,7 +32,11 @@ export default function CorrectionPage() {
     setResult(data);
   } catch (error) {
     console.error("Failed to request correction:", error);
-    setErrorMessage("Failed to correct your Korean text. Please try again.");
+    setErrorMessage(
+  error instanceof Error
+    ? error.message
+    : "Failed to correct your Korean text. Please try again.",
+);
   } finally {
     setIsLoading(false);
   }

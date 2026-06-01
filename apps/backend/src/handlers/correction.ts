@@ -5,13 +5,14 @@ import {
   correctionRequestSchema,
   type CorrectionRequestBody,
 } from "../validators/correctionValidator.js";
-import { badRequest, ok, serverError } from "../utils/http.js";
+import { badRequest, ok, serverError, tooManyRequests  } from "../utils/http.js";
 
 import {
   InvalidJsonBodyError,
   parseJsonBody,
 } from "../utils/request.js";
 import { formatZodError } from "../utils/validation.js";
+import { UsageLimitExceededError } from "../types/usageLimit.js";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
@@ -22,7 +23,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
     return ok(result);
 
-  } catch (error) {
+    } catch (error) {
     if (error instanceof InvalidJsonBodyError) {
       return badRequest(error.message);
     }
@@ -30,8 +31,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     if (error instanceof ZodError) {
       return badRequest(formatZodError(error));
     }
+
+    if (error instanceof UsageLimitExceededError) {
+      return tooManyRequests("You have used all of today’s writing correction attempts.");
+    }
+
     console.error("Correction handler error:", error);
-    
+
     return serverError("Failed to correct Korean text");
   }
   

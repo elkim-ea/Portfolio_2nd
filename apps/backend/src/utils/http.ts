@@ -28,3 +28,13 @@ export const serverError = (message = "Internal server error") => {
     body: JSON.stringify({ message }),
   };
 };
+
+export const tooManyRequests = (message: string) => {
+  return {
+    statusCode: 429,
+    headers: defaultHeaders,
+    body: JSON.stringify({
+      message,
+    }),
+  };
+};
