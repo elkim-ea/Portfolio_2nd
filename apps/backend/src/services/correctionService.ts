@@ -13,6 +13,7 @@ import { parseAiJson } from "../utils/parseAiJson.js";
 
 export type CorrectionInput = {
   text?: string;
+  userId: string;
 };
 
 export type CorrectionServiceResult = AiResponse<
@@ -73,7 +74,7 @@ function formatCorrectionOutput(result: CorrectionResultData): string {
 export const correctKoreanText = async (
   input: CorrectionInput,
 ): Promise<CorrectionServiceResult> => {
-  const userId = "dev-user-001";
+  const { userId } = input;
   const inputText = input.text ?? "";
 
   const profile = await getOrCreateUserProfile(userId);

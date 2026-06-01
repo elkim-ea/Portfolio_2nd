@@ -2,6 +2,7 @@ import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import { runLevelTest } from "../services/levelTestService.js";
 import { badRequest, ok, serverError, tooManyRequests } from "../utils/http.js";
 import { UsageLimitExceededError } from "../types/usageLimit.js";
+import { getAuthenticatedUserId } from "../utils/auth.js";
 
 export const handler = async (event: APIGatewayProxyEventV2) => {
   try {
@@ -11,8 +12,9 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
       return badRequest("text is required");
     }
 
+    const userId = getAuthenticatedUserId(event);
     const result = await runLevelTest({
-      text: body.text,
+      userId,text: body.text,
     });
 
     return ok(result);

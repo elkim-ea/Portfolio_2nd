@@ -61,9 +61,11 @@ resource "aws_apigatewayv2_integration" "lambda" {
 resource "aws_apigatewayv2_route" "routes" {
   for_each = local.routes
 
-  api_id    = aws_apigatewayv2_api.http_api.id
-  route_key = each.value.route_key
-  target    = "integrations/${aws_apigatewayv2_integration.lambda[each.key].id}"
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = each.value.route_key
+  target             = "integrations/${aws_apigatewayv2_integration.lambda[each.key].id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito_jwt.id
 }
 
 resource "aws_lambda_permission" "allow_api_gateway" {
@@ -75,4 +77,16 @@ resource "aws_lambda_permission" "allow_api_gateway" {
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
+resource "aws_apigatewayv2_authorizer" "cognito_jwt" {
+  api_id           = aws_apigatewayv2_api.http_api.id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = "${var.project_name}-${var.environment}-cognito-jwt-authorizer"
+
+  jwt_configuration {
+    audience = [var.cognito_app_client_id]
+    issuer   = var.cognito_issuer_url
+  }
 }

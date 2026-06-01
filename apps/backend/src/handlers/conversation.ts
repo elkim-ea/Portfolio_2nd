@@ -12,13 +12,15 @@ import {
 } from "../utils/request.js";
 import { formatZodError } from "../utils/validation.js";
 import { UsageLimitExceededError } from "../types/usageLimit.js";
+import { getAuthenticatedUserId } from "../utils/auth.js";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
     const rawBody = parseJsonBody<ConversationRequestBody>(event);
     const body = conversationRequestSchema.parse(rawBody);
 
-    const result = await generateConversation(body);
+    const userId = getAuthenticatedUserId(event);
+    const result = await generateConversation({userId,topic: body.topic});
 
     return ok(result);
 

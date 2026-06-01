@@ -48,3 +48,13 @@ variable "tags" {
   description = "Common tags"
   type        = map(string)
 }
+
+variable "cognito_issuer_url" {
+  description = "Cognito User Pool issuer URL for JWT authorizer"
+  type        = string
+}
+
+variable "cognito_app_client_id" {
+  description = "Cognito User Pool App Client ID for JWT authorizer audience"
+  type        = string
+}

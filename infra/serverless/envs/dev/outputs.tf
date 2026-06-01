@@ -45,3 +45,15 @@ output "cloudfront_domain_name" {
 output "cloudfront_url" {
   value = module.s3_cloudfront.cloudfront_url
 }
+
+output "cognito_user_pool_id" {
+  value = module.cognito.user_pool_id
+}
+
+output "cognito_user_pool_client_id" {
+  value = module.cognito.user_pool_client_id
+}
+
+output "cognito_issuer_url" {
+  value = module.cognito.issuer_url
+}

@@ -12,6 +12,7 @@ import type {
 import { parseAiJson } from "../utils/parseAiJson.js";
 
 export type ConversationInput = {
+  userId: string;
   topic?: string;
 };
 
@@ -106,8 +107,8 @@ function formatConversationOutput(result: ConversationResultData): string {
 export const generateConversation = async (
   input: ConversationInput,
 ): Promise<ConversationServiceResult> => {
-  const userId = "dev-user-001";
   const topic = input.topic ?? "ordering food at a restaurant";
+  const userId = input.userId;
 
   const profile = await getOrCreateUserProfile(userId);
 

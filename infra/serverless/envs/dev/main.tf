@@ -54,6 +54,9 @@ module "api_gateway" {
   conversation_lambda_function_name = module.lambda.conversation_function_name
   level_test_lambda_function_name   = module.lambda.level_test_function_name
 
+  cognito_issuer_url    = module.cognito.issuer_url
+  cognito_app_client_id = module.cognito.user_pool_client_id
+
   cors_allowed_origins = [
     "http://localhost:5173",
     "https://${module.s3_cloudfront.cloudfront_domain_name}"
@@ -67,6 +70,16 @@ module "s3_cloudfront" {
 
   project_name = var.project_name
   environment  = var.environment
+
+  tags = local.common_tags
+}
+
+module "cognito" {
+  source = "../../modules/cognito"
+
+  project_name = var.project_name
+  environment  = var.environment
+  aws_region   = var.aws_region
 
   tags = local.common_tags
 }

@@ -13,13 +13,15 @@ import {
 } from "../utils/request.js";
 import { formatZodError } from "../utils/validation.js";
 import { UsageLimitExceededError } from "../types/usageLimit.js";
+import { getAuthenticatedUserId } from "../utils/auth.js";
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
     const rawBody = parseJsonBody<CorrectionRequestBody>(event);
     const body = correctionRequestSchema.parse(rawBody);
 
-    const result = await correctKoreanText(body);
+    const userId = getAuthenticatedUserId(event);
+    const result = await correctKoreanText({userId, text: body.text,});
 
     return ok(result);
 

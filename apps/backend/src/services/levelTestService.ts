@@ -13,6 +13,7 @@ import { parseAiJson } from "../utils/parseAiJson.js";
 
 export type LevelTestInput = {
   text?: string;
+  userId: string;
 };
 
 export type LevelTestServiceResult = AiResponse<
@@ -78,9 +79,10 @@ function formatLevelTestOutput(result: LevelTestResultData): string {
 export const runLevelTest = async (
   input: LevelTestInput,
 ): Promise<LevelTestServiceResult> => {
-  const userId = "dev-user-001";
+ 
   const inputText = input.text ?? "";
-
+  const userId = input.userId;
+  
   const profile = await getOrCreateUserProfile(userId);
 
 await checkUsageLimit({
