@@ -74,11 +74,76 @@ module "api_gateway" {
   tags = local.common_tags
 }
 
+resource "aws_wafv2_web_acl" "cloudfront" {
+  provider = aws.us_east_1
+
+  name        = "${var.project_name}-${var.environment}-cloudfront-waf"
+  description = "WAF for ${var.project_name} ${var.environment} CloudFront distribution"
+  scope       = "CLOUDFRONT"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${var.project_name}-${var.environment}-cf-common-rules"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "RateLimitPerIp"
+    priority = 2
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 100
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${var.project_name}-${var.environment}-cf-rate-limit"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "${var.project_name}-${var.environment}-cloudfront-waf"
+    sampled_requests_enabled   = true
+  }
+
+  tags = local.common_tags
+}
+
 module "s3_cloudfront" {
   source = "../../modules/s3-cloudfront"
 
   project_name = var.project_name
   environment  = var.environment
+  web_acl_id   = aws_wafv2_web_acl.cloudfront.arn
 
   tags = local.common_tags
 }

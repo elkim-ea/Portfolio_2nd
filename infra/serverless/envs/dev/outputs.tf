@@ -61,3 +61,11 @@ output "cognito_issuer_url" {
 output "bedrock_model_id_parameter_name" {
   value = aws_ssm_parameter.bedrock_model_id.name
 }
+
+output "cloudfront_waf_web_acl_arn" {
+  value = aws_wafv2_web_acl.cloudfront.arn
+}
+
+output "cloudfront_waf_web_acl_name" {
+  value = aws_wafv2_web_acl.cloudfront.name
+}
