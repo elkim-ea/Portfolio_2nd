@@ -63,14 +63,15 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
-          "dynamodb:DeleteItem",
-          "dynamodb:Query",
-          "dynamodb:Scan"
+          "dynamodb:Query"
         ]
         Resource = [
           var.learning_records_table_arn,
+          "${var.learning_records_table_arn}/index/*",
           var.usage_limits_table_arn,
-          var.user_profiles_table_arn
+          "${var.usage_limits_table_arn}/index/*",
+          var.user_profiles_table_arn,
+          "${var.user_profiles_table_arn}/index/*"
         ]
       },
       {
