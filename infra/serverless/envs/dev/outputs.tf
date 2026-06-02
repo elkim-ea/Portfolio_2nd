@@ -57,3 +57,7 @@ output "cognito_user_pool_client_id" {
 output "cognito_issuer_url" {
   value = module.cognito.issuer_url
 }
+
+output "bedrock_model_id_parameter_name" {
+  value = aws_ssm_parameter.bedrock_model_id.name
+}

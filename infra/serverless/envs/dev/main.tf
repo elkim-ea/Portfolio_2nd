@@ -16,6 +16,15 @@ module "dynamodb" {
   tags = local.common_tags
 }
 
+resource "aws_ssm_parameter" "bedrock_model_id" {
+  name        = "/${var.project_name}/${var.environment}/bedrock/model-id"
+  description = "Bedrock model ID for KoreanMate ${var.environment}"
+  type        = "String"
+  value       = var.bedrock_model_id
+
+  tags = local.common_tags
+}
+
 module "lambda" {
   source = "../../modules/lambda"
 
@@ -35,7 +44,7 @@ module "lambda" {
   usage_limits_table_arn     = module.dynamodb.usage_limits_table_arn
   user_profiles_table_arn    = module.dynamodb.user_profiles_table_arn
 
-  bedrock_model_id = var.bedrock_model_id
+  bedrock_model_id = aws_ssm_parameter.bedrock_model_id.value
 
   tags = local.common_tags
 }
