@@ -4,6 +4,51 @@ locals {
   bucket_name = "${var.project_name}-${var.environment}-cloudtrail-${data.aws_caller_identity.current.account_id}"
 }
 
+resource "aws_kms_key" "cloudtrail" {
+  description             = "KMS key for ${var.project_name} ${var.environment} CloudTrail logs"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "EnableAccountRootPermissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowCloudTrailToEncryptLogs"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        }
+        Action = [
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:SourceArn" = "arn:aws:cloudtrail:${var.aws_region}:${data.aws_caller_identity.current.account_id}:trail/${var.project_name}-${var.environment}-cloudtrail"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_kms_alias" "cloudtrail" {
+  name          = "alias/${var.project_name}-${var.environment}-cloudtrail"
+  target_key_id = aws_kms_key.cloudtrail.key_id
+}
+
 resource "aws_s3_bucket" "cloudtrail_logs" {
   bucket = local.bucket_name
 
@@ -32,7 +77,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail_logs" 
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.cloudtrail.arn
     }
   }
 }
@@ -98,6 +144,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_logs" {
 resource "aws_cloudtrail" "this" {
   name                          = "${var.project_name}-${var.environment}-cloudtrail"
   s3_bucket_name                = aws_s3_bucket.cloudtrail_logs.id
+  kms_key_id                    = aws_kms_key.cloudtrail.arn
   include_global_service_events = true
   is_multi_region_trail         = true
   enable_logging                = true
