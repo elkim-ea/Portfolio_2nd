@@ -90,7 +90,7 @@ jobs:
       - name: Terraform validate
         run: terraform validate
 
-    trivy:
+  trivy:
     name: Trivy Security Scan
     runs-on: ubuntu-latest
 
@@ -119,4 +119,5 @@ jobs:
           scan-ref: infra
           format: table
           severity: CRITICAL,HIGH
-          exit-code: "1" 
+          exit-code: "1"  
+      
