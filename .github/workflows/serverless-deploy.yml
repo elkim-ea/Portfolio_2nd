@@ -1,0 +1,117 @@
+name: Serverless Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "What to deploy"
+        required: true
+        default: "plan-only"
+        type: choice
+        options:
+          - plan-only
+          - apply
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Serverless Deploy
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
+      TF_VAR_environment: dev
+      TF_VAR_project_name: koreanmate
+      TF_VAR_user_profiles_table_name: koreanmate-dev-user-profiles
+      TF_VAR_bedrock_model_id: anthropic.claude-3-haiku-20240307-v1:0
+      TF_VAR_monthly_budget_limit_usd: ${{ secrets.TF_VAR_MONTHLY_BUDGET_LIMIT_USD }}
+      TF_VAR_budget_notification_email: ${{ secrets.TF_VAR_BUDGET_NOTIFICATION_EMAIL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: apps/backend
+        run: npm ci
+
+      - name: Typecheck backend
+        working-directory: apps/backend
+        run: npm run typecheck
+
+      - name: Build and package Lambda functions
+        working-directory: apps/backend
+        run: npm run package:lambda
+
+      - name: Setup Node.js for frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: apps/frontend
+        env:
+          VITE_API_BASE_URL: https://z48o07uche.execute-api.ap-northeast-2.amazonaws.com
+          VITE_AWS_REGION: ap-northeast-2
+          VITE_COGNITO_USER_POOL_ID: ap-northeast-2_YcKmjrbd0
+          VITE_COGNITO_USER_POOL_CLIENT_ID: 19dqd3rnp2rrtgi9co6akbjvu1
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt check
+        working-directory: infra/serverless/envs/dev
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        working-directory: infra/serverless/envs/dev
+        run: terraform init
+
+      - name: Terraform validate
+        working-directory: infra/serverless/envs/dev
+        run: terraform validate
+
+      - name: Terraform plan
+        working-directory: infra/serverless/envs/dev
+        run: terraform plan -out=tfplan
+
+      - name: Terraform apply
+        if: ${{ github.event.inputs.deploy_target == 'apply' }}
+        working-directory: infra/serverless/envs/dev
+        run: terraform apply -auto-approve tfplan
+
+      - name: Upload frontend to S3
+        if: ${{ github.event.inputs.deploy_target == 'apply' }}
+        run: |
+          aws s3 sync apps/frontend/dist s3://koreanmate-dev-frontend-127696278675 --delete
+
+      - name: Invalidate CloudFront cache
+        if: ${{ github.event.inputs.deploy_target == 'apply' }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E3S3JUBW9YHNJ4 \
+            --paths "/*"
