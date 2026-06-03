@@ -93,3 +93,11 @@ output "cloudtrail_arn" {
 output "cloudtrail_bucket_name" {
   value = module.cloudtrail.cloudtrail_bucket_name
 }
+
+output "budget_name" {
+  value = module.budget.budget_name
+}
+
+output "budget_limit_usd" {
+  value = module.budget.budget_limit_usd
+}

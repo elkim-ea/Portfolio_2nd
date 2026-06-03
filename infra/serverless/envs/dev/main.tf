@@ -169,6 +169,16 @@ module "cloudtrail" {
   tags = local.common_tags
 }
 
+module "budget" {
+  source = "../../modules/budget"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  monthly_budget_limit_usd  = var.monthly_budget_limit_usd
+  budget_notification_email = var.budget_notification_email
+}
+
 module "cognito" {
   source = "../../modules/cognito"
 

@@ -49,7 +49,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail_logs" {
     }
 
     expiration {
-      days = 90
+      days = 180
     }
 
     noncurrent_version_expiration {
