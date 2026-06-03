@@ -10,7 +10,7 @@ on:
         type: choice
         options:
           - plan-only
-          - apply
+        #   - apply
 
 permissions:
   contents: read
@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       AWS_REGION: ${{ secrets.AWS_REGION }}
       TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
       TF_VAR_environment: dev
@@ -99,19 +100,19 @@ jobs:
         working-directory: infra/serverless/envs/dev
         run: terraform plan -out=tfplan
 
-      - name: Terraform apply
-        if: ${{ github.event.inputs.deploy_target == 'apply' }}
-        working-directory: infra/serverless/envs/dev
-        run: terraform apply -auto-approve tfplan
+    #   - name: Terraform apply
+    #     if: ${{ github.event.inputs.deploy_target == 'apply' }}
+    #     working-directory: infra/serverless/envs/dev
+    #     run: terraform apply -auto-approve tfplan
 
-      - name: Upload frontend to S3
-        if: ${{ github.event.inputs.deploy_target == 'apply' }}
-        run: |
-          aws s3 sync apps/frontend/dist s3://koreanmate-dev-frontend-127696278675 --delete
+    #   - name: Upload frontend to S3
+    #     if: ${{ github.event.inputs.deploy_target == 'apply' }}
+    #     run: |
+    #       aws s3 sync apps/frontend/dist s3://koreanmate-dev-frontend-127696278675 --delete
 
-      - name: Invalidate CloudFront cache
-        if: ${{ github.event.inputs.deploy_target == 'apply' }}
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id E3S3JUBW9YHNJ4 \
-            --paths "/*"
+    #   - name: Invalidate CloudFront cache
+    #     if: ${{ github.event.inputs.deploy_target == 'apply' }}
+    #     run: |
+    #       aws cloudfront create-invalidation \
+    #         --distribution-id E3S3JUBW9YHNJ4 \
+    #         --paths "/*"
