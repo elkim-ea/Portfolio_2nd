@@ -160,6 +160,15 @@ module "monitoring" {
   tags = local.common_tags
 }
 
+module "cloudtrail" {
+  source = "../../modules/cloudtrail"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  tags = local.common_tags
+}
+
 module "cognito" {
   source = "../../modules/cognito"
 

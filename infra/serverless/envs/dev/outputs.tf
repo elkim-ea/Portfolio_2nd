@@ -81,3 +81,15 @@ output "lambda_duration_alarm_names" {
 output "api_gateway_5xx_alarm_name" {
   value = module.monitoring.api_gateway_5xx_alarm_name
 }
+
+output "cloudtrail_name" {
+  value = module.cloudtrail.cloudtrail_name
+}
+
+output "cloudtrail_arn" {
+  value = module.cloudtrail.cloudtrail_arn
+}
+
+output "cloudtrail_bucket_name" {
+  value = module.cloudtrail.cloudtrail_bucket_name
+}
