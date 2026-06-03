@@ -45,6 +45,23 @@ resource "aws_apigatewayv2_stage" "default" {
   name        = "$default"
   auto_deploy = true
 
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_access_logs.arn
+
+    format = jsonencode({
+      requestId      = "$context.requestId"
+      ip             = "$context.identity.sourceIp"
+      requestTime    = "$context.requestTime"
+      httpMethod     = "$context.httpMethod"
+      routeKey       = "$context.routeKey"
+      status         = "$context.status"
+      protocol       = "$context.protocol"
+      responseLength = "$context.responseLength"
+      integrationErr = "$context.integrationErrorMessage"
+      authorizerErr  = "$context.authorizer.error"
+    })
+  }
+
   tags = var.tags
 }
 
@@ -89,4 +106,10 @@ resource "aws_apigatewayv2_authorizer" "cognito_jwt" {
     audience = [var.cognito_app_client_id]
     issuer   = var.cognito_issuer_url
   }
+}
+resource "aws_cloudwatch_log_group" "api_access_logs" {
+  name              = "/aws/apigateway/${var.project_name}-${var.environment}-http-api"
+  retention_in_days = 14
+
+  tags = var.tags
 }

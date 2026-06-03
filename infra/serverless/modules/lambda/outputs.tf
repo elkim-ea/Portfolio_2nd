@@ -33,3 +33,11 @@ output "conversation_invoke_arn" {
 output "level_test_invoke_arn" {
   value = aws_lambda_function.functions["level_test"].invoke_arn
 }
+
+output "lambda_function_names" {
+  value = [
+    aws_lambda_function.functions["correction"].function_name,
+    aws_lambda_function.functions["conversation"].function_name,
+    aws_lambda_function.functions["level_test"].function_name
+  ]
+}

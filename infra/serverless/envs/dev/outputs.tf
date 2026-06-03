@@ -69,3 +69,15 @@ output "cloudfront_waf_web_acl_arn" {
 output "cloudfront_waf_web_acl_name" {
   value = aws_wafv2_web_acl.cloudfront.name
 }
+
+output "lambda_error_alarm_names" {
+  value = module.monitoring.lambda_error_alarm_names
+}
+
+output "lambda_duration_alarm_names" {
+  value = module.monitoring.lambda_duration_alarm_names
+}
+
+output "api_gateway_5xx_alarm_name" {
+  value = module.monitoring.api_gateway_5xx_alarm_name
+}

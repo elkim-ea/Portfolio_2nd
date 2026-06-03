@@ -148,6 +148,18 @@ module "s3_cloudfront" {
   tags = local.common_tags
 }
 
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  lambda_function_names = module.lambda.lambda_function_names
+  api_gateway_id        = module.api_gateway.api_id
+
+  tags = local.common_tags
+}
+
 module "cognito" {
   source = "../../modules/cognito"
 
@@ -157,3 +169,4 @@ module "cognito" {
 
   tags = local.common_tags
 }
+
