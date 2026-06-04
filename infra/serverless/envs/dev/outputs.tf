@@ -109,3 +109,19 @@ output "grafana_cloudwatch_role_arn" {
 output "grafana_cloudwatch_role_name" {
   value = module.grafana_cloud.grafana_cloudwatch_role_name
 }
+
+output "lambda_execution_role_arn" {
+  value = module.iam.lambda_execution_role_arn
+}
+
+output "lambda_execution_role_name" {
+  value = module.iam.lambda_execution_role_name
+}
+
+output "lambda_function_names" {
+  value = module.lambda.lambda_function_names
+}
+
+output "lambda_function_arns" {
+  value = module.lambda.lambda_function_arns
+}

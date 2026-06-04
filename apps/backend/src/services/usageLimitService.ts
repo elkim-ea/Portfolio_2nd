@@ -1,8 +1,6 @@
 import { getTodayUsage } from "../repositories/usageLimitRepository.js";
 import { DAILY_USAGE_LIMITS } from "../types/usageLimit.js";
 
-const DEFAULT_USER_ID = "dev-user-001";
-
 export type UsageSummary = {
   userId: string;
   usageDate: string;
@@ -17,8 +15,14 @@ export type UsageSummary = {
   remainingCount: number;
 };
 
-export const getUsageSummary = async (): Promise<UsageSummary> => {
-  const usage = await getTodayUsage(DEFAULT_USER_ID);
+export const getUsageSummary = async (
+  userId: string,
+): Promise<UsageSummary> => {
+  if (!userId) {
+    throw new Error("userId is required");
+  }
+
+  const usage = await getTodayUsage(userId);
 
   return {
     userId: usage.userId,

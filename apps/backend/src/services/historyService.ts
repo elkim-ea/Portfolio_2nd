@@ -1,13 +1,17 @@
 import { findLearningRecordsByUserId } from "../repositories/learningRecordRepository.js";
 
-const DEFAULT_USER_ID = "dev-user-001";
-
 export type HistoryResult = {
   records: Awaited<ReturnType<typeof findLearningRecordsByUserId>>;
 };
 
-export const getLearningHistory = async (): Promise<HistoryResult> => {
-  const records = await findLearningRecordsByUserId(DEFAULT_USER_ID, 20);
+export const getLearningHistory = async (
+  userId: string,
+): Promise<HistoryResult> => {
+  if (!userId) {
+    throw new Error("userId is required");
+  }
+
+  const records = await findLearningRecordsByUserId(userId, 20);
 
   return {
     records,

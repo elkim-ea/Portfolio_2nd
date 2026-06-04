@@ -39,7 +39,14 @@ export const handler = async (
       });
     }
 
-    const result = await getLearningHistory();
+    const userId = (event.requestContext as any).authorizer?.claims?.sub;
+    if (!userId) {
+      return response(401, {
+        message: "Unauthorized",
+      });
+    }
+
+    const result = await getLearningHistory(userId);
 
     return response(200, {
       message: "Learning records fetched",

@@ -32,6 +32,8 @@ module "lambda" {
   environment  = var.environment
   aws_region   = var.aws_region
 
+  lambda_execution_role_arn = module.iam.lambda_execution_role_arn
+
   correction_zip_path   = "../../../../apps/backend/lambda-packages/correction.zip"
   conversation_zip_path = "../../../../apps/backend/lambda-packages/conversation.zip"
   level_test_zip_path   = "../../../../apps/backend/lambda-packages/levelTest.zip"
@@ -47,6 +49,10 @@ module "lambda" {
   bedrock_model_id = aws_ssm_parameter.bedrock_model_id.value
 
   tags = local.common_tags
+
+  depends_on = [
+    module.iam
+  ]
 }
 
 module "api_gateway" {
@@ -202,3 +208,15 @@ module "cognito" {
   tags = local.common_tags
 }
 
+module "iam" {
+  source = "../../modules/iam"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  learning_records_table_arn = module.dynamodb.learning_records_table_arn
+  usage_limits_table_arn     = module.dynamodb.usage_limits_table_arn
+  user_profiles_table_arn    = module.dynamodb.user_profiles_table_arn
+
+  tags = local.common_tags
+}

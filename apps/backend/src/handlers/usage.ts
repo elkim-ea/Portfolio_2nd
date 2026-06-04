@@ -39,7 +39,14 @@ export const handler = async (
       });
     }
 
-    const usage = await getUsageSummary();
+    const userId = (event.requestContext as any).authorizer?.claims?.sub;
+    if (!userId) {
+      return response(401, {
+        message: "Unauthorized",
+      });
+    }
+
+    const usage = await getUsageSummary(userId);
 
     return response(200, {
       message: "Usage fetched",

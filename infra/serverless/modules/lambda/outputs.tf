@@ -41,3 +41,19 @@ output "lambda_function_names" {
     aws_lambda_function.functions["level_test"].function_name
   ]
 }
+
+output "lambda_function_arns" {
+  description = "Lambda function ARNs"
+  value = {
+    for key, function in aws_lambda_function.functions :
+    key => function.arn
+  }
+}
+
+output "lambda_invoke_arns" {
+  description = "Lambda invoke ARNs"
+  value = {
+    for key, function in aws_lambda_function.functions :
+    key => function.invoke_arn
+  }
+}

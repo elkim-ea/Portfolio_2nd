@@ -67,3 +67,8 @@ variable "tags" {
   description = "Common tags"
   type        = map(string)
 }
+
+variable "lambda_execution_role_arn" {
+  description = "Lambda execution role ARN"
+  type        = string
+}

@@ -11,7 +11,7 @@ import { validateUpdateUserProfileInput } from "../validators/profileValidator.j
 
 function response(
   statusCode: number,
-  body: Record<string, unknown>
+  body: Record<string, unknown>,
 ): APIGatewayProxyStructuredResultV2 {
   return {
     statusCode,
@@ -37,28 +37,18 @@ function parseBody(body: string | undefined): unknown {
   }
 }
 
-function getUserId(event: APIGatewayProxyEventV2): string {
-  const requestContext = event.requestContext as unknown as {
-    authorizer?: {
-      jwt?: {
-        claims?: {
-          sub?: string;
-        };
-      };
-    };
-  };
-
-  const sub = requestContext.authorizer?.jwt?.claims?.sub;
+function getUserId(event: APIGatewayProxyEventV2): string | null {
+  const sub = (event.requestContext as any).authorizer?.jwt?.claims?.sub;
 
   if (typeof sub === "string" && sub.length > 0) {
     return sub;
   }
 
-  return "dev-user-001";
+  return null;
 }
 
 export async function handler(
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyStructuredResultV2> {
   try {
     const method = event.requestContext.http.method;
@@ -70,6 +60,12 @@ export async function handler(
     }
 
     const userId = getUserId(event);
+
+    if (!userId) {
+      return response(401, {
+        message: "Unauthorized",
+      });
+    }
 
     if (method === "GET") {
       const profile = await getOrCreateUserProfile(userId);
