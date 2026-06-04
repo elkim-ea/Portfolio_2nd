@@ -160,6 +160,18 @@ module "monitoring" {
   tags = local.common_tags
 }
 
+module "grafana_cloud" {
+  source = "../../modules/grafana-cloud"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  grafana_aws_account_id = var.grafana_aws_account_id
+  grafana_external_id    = var.grafana_external_id
+
+  tags = local.common_tags
+}
+
 module "cloudtrail" {
   source = "../../modules/cloudtrail"
 

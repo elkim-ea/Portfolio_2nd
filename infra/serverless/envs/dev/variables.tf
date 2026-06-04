@@ -33,3 +33,14 @@ variable "budget_notification_email" {
   type        = string
   sensitive   = true
 }
+
+variable "grafana_aws_account_id" {
+  description = "Grafana Cloud AWS account ID for AssumeRole"
+  type        = string
+}
+
+variable "grafana_external_id" {
+  description = "Grafana Cloud external ID for AssumeRole"
+  type        = string
+  sensitive   = true
+}

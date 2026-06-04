@@ -101,3 +101,11 @@ output "budget_name" {
 output "budget_limit_usd" {
   value = module.budget.budget_limit_usd
 }
+
+output "grafana_cloudwatch_role_arn" {
+  value = module.grafana_cloud.grafana_cloudwatch_role_arn
+}
+
+output "grafana_cloudwatch_role_name" {
+  value = module.grafana_cloud.grafana_cloudwatch_role_name
+}
