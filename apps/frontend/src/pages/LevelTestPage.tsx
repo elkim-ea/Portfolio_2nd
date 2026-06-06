@@ -6,41 +6,85 @@ import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import type { LevelTestApiResponse } from "../types/aiResult";
 import { requestLevelTest } from "../api/levelTestApi";
+import { updateProfile } from "../api/profileApi";
+import type { LearningLevel } from "../types/learningRecord";
+
+const normalizeLevel = (level: string): LearningLevel => {
+  const lowerLevel = level.toLowerCase();
+
+  if (lowerLevel.includes("advanced")) {
+    return "advanced";
+  }
+
+  if (lowerLevel.includes("intermediate")) {
+    return "intermediate";
+  }
+
+  return "beginner";
+};
 
 export default function LevelTestPage() {
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<LevelTestApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isApplying, setIsApplying] = useState(false);
+  const [applyMessage, setApplyMessage] = useState("");
 
   const handleSubmit = async () => {
-  const trimmedAnswer = answer.trim();
+    const trimmedAnswer = answer.trim();
 
-  if (!trimmedAnswer) {
-    return;
-  }
+    if (!trimmedAnswer) {
+      return;
+    }
 
-  try {
-    setIsLoading(true);
-    setErrorMessage("");
-    setResult(null);
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      setApplyMessage("");
+      setResult(null);
 
-    const data = await requestLevelTest({
-      text: trimmedAnswer,
-    });
+      const data = await requestLevelTest({
+        text: trimmedAnswer,
+      });
 
-    setResult(data);
-  } catch (error) {
-    console.error("Failed to request level test:", error);
-    setErrorMessage(
-  error instanceof Error
-    ? error.message
-    : "Failed to correct your Korean text. Please try again.",
-);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      setResult(data);
+    } catch (error) {
+      console.error("Failed to request level test:", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to analyze your Korean level. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleApplyToProfile = async () => {
+    if (!result) {
+      return;
+    }
+
+    try {
+      setIsApplying(true);
+      setApplyMessage("");
+
+      const currentLevel = normalizeLevel(result.result.levelLabel);
+
+      await updateProfile({
+        currentLevel,
+        levelLabel: result.result.levelLabel,
+      });
+
+      setApplyMessage("Level applied to your profile.");
+    } catch (error) {
+      console.error("Failed to apply level to profile:", error);
+      setApplyMessage("Failed to apply level to profile.");
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
   return (
     <div>
@@ -66,12 +110,17 @@ export default function LevelTestPage() {
               placeholder="예: 오늘 저는 학교에 갔어요..."
             />
 
-            <Button onClick={handleSubmit} disabled={!answer.trim() || isLoading}>
-             {isLoading ? "Analyzing..." : "Analyze My Level"}
+            <Button
+              onClick={handleSubmit}
+              disabled={!answer.trim() || isLoading}
+            >
+              {isLoading ? "Analyzing..." : "Analyze My Level"}
             </Button>
 
             {errorMessage && (
-            <p className="text-sm font-medium text-red-500">{errorMessage}</p>
+              <p className="text-sm font-medium text-red-500">
+                {errorMessage}
+              </p>
             )}
           </div>
         </Card>
@@ -84,13 +133,13 @@ export default function LevelTestPage() {
 
           {isLoading ? (
             <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-                Analyzing your Korean level...
+              Analyzing your Korean level...
             </div>
-            ) : !result ? (
+          ) : !result ? (
             <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-                Your level test result will appear here.
+              Your level test result will appear here.
             </div>
-            ) : (
+          ) : (
             <div className="mt-4 space-y-4">
               <section className="rounded-xl bg-blue-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-blue-500">
@@ -132,9 +181,21 @@ export default function LevelTestPage() {
                 </ul>
               </section>
 
-              <Button variant="secondary" disabled>
-                Apply to Profile
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  variant="secondary"
+                  onClick={handleApplyToProfile}
+                  disabled={!result || isApplying}
+                >
+                  {isApplying ? "Applying..." : "Apply to Profile"}
+                </Button>
+
+                {applyMessage && (
+                  <p className="text-sm font-medium text-slate-600">
+                    {applyMessage}
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </Card>

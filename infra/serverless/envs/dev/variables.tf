@@ -44,3 +44,8 @@ variable "grafana_external_id" {
   type        = string
   sensitive   = true
 }
+
+variable "lambda_kms_key_arn" {
+  description = "KMS key ARN used to encrypt Lambda environment variables"
+  type        = string
+}

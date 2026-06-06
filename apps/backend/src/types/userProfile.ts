@@ -31,3 +31,4 @@ export const DEFAULT_USER_PROFILE: Omit<UserProfile, "userId" | "updatedAt"> = {
   conversationTone: "polite",
   learningGoal: "daily",
 };
+

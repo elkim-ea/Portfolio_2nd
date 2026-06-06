@@ -36,9 +36,8 @@ output "level_test_invoke_arn" {
 
 output "lambda_function_names" {
   value = [
-    aws_lambda_function.functions["correction"].function_name,
-    aws_lambda_function.functions["conversation"].function_name,
-    aws_lambda_function.functions["level_test"].function_name
+     for function in aws_lambda_function.functions :
+     function.function_name
   ]
 }
 
@@ -56,4 +55,28 @@ output "lambda_invoke_arns" {
     for key, function in aws_lambda_function.functions :
     key => function.invoke_arn
   }
+}
+
+output "profile_function_name" {
+  value = aws_lambda_function.functions["profile"].function_name
+}
+
+output "history_function_name" {
+  value = aws_lambda_function.functions["history"].function_name
+}
+
+output "usage_function_name" {
+  value = aws_lambda_function.functions["usage"].function_name
+}
+
+output "profile_invoke_arn" {
+  value = aws_lambda_function.functions["profile"].invoke_arn
+}
+
+output "history_invoke_arn" {
+  value = aws_lambda_function.functions["history"].invoke_arn
+}
+
+output "usage_invoke_arn" {
+  value = aws_lambda_function.functions["usage"].invoke_arn
 }

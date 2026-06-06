@@ -9,7 +9,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const AdmZip = require("adm-zip");
 
-const functions = ["correction", "conversation", "levelTest"];
+const functions = ["correction", "conversation", "levelTest", "profile","history", "usage",];
 
 const rootDir = process.cwd();
 const distDir = join(rootDir, "dist");

@@ -1,0 +1,13 @@
+{
+  "version": "2.0",
+  "requestContext": {
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "dev-user-001"
+        }
+      }
+    }
+  },
+  "body": "{\"text\":\"안녕하세요 저는 학생이에요\",\"level\":\"beginner\",\"explanationLanguage\":\"both\"}"
+}

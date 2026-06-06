@@ -1,19 +1,13 @@
 import { z } from "zod";
 
 export const conversationRequestSchema = z.object({
-  topic: z
-    .string()
-    .trim()
-    .min(1, "Topic must not be empty")
-    .max(100, "Topic must be 100 characters or less")
-    .optional()
-    .default("daily conversation"),
+  topic: z.string().trim().min(1, "Topic is required").optional(),
+  level: z
+    .enum(["beginner", "intermediate", "advanced"])
+    .optional(),
+  tone: z
+    .enum(["polite", "casual"])
+    .optional(),
 });
 
-export type ConversationRequestBody = z.input<
-  typeof conversationRequestSchema
->;
-
-export type ValidatedConversationRequestBody = z.output<
-  typeof conversationRequestSchema
->;
+export type ConversationRequestBody = z.infer<typeof conversationRequestSchema>;

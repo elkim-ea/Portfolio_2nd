@@ -8,6 +8,7 @@ export type LearningRecord = {
   type: LearningRecordType;
   inputText: string;
   outputText: string;
+  outputData?: unknown;
   topic?: string | null;
   level?: LearningLevel | null;
   createdAt: string;

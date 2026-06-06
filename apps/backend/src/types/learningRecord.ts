@@ -1,3 +1,8 @@
+import type {
+  ExplanationLanguage,
+  ConversationTone,
+} from "./userProfile.js";
+
 export type LearningRecordType = "correction" | "conversation" | "level-test";
 
 export type LearningLevel = "beginner" | "intermediate" | "advanced";
@@ -10,6 +15,8 @@ export type LearningRecord = {
   outputText: string;
   outputData?: unknown;
   topic?: string | null;
-  level?: string | null;
+  level?: LearningLevel | string | null;
+  explanationLanguage?: ExplanationLanguage | null;
+  conversationTone?: ConversationTone | null;
   createdAt: string;
 };

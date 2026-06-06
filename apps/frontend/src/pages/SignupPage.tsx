@@ -1,13 +1,50 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { signUp } from "aws-amplify/auth";
 import Card from "../components/common/Card";
 import Button from "../components/common/Button";
 
 export default function SignupPage() {
   const navigate = useNavigate();
 
-  const handleSignup = () => {
-    // TODO: Cognito signUp 연결 예정
-    navigate("/level-test");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSignup = async () => {
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      await signUp({
+        username: email,
+        password,
+        options: {
+          userAttributes: {
+            email,
+          },
+        },
+      });
+
+      navigate(`/confirm-signup?email=${encodeURIComponent(email)}`);
+    } catch (error) {
+      console.error("Failed to sign up:", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Signup failed. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -17,7 +54,7 @@ export default function SignupPage() {
           Create your account
         </h1>
         <p className="mt-2 text-sm text-slate-500">
-          회원가입 후 가벼운 레벨 테스트를 진행합니다.
+          회원가입 후 이메일 인증을 진행합니다.
         </p>
 
         <form
@@ -31,8 +68,11 @@ export default function SignupPage() {
             <span className="text-sm font-bold text-slate-700">Email</span>
             <input
               type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               placeholder="user@example.com"
               className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm outline-none focus:border-blue-500"
+              required
             />
           </label>
 
@@ -40,8 +80,11 @@ export default function SignupPage() {
             <span className="text-sm font-bold text-slate-700">Password</span>
             <input
               type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
               placeholder="*******"
               className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm outline-none focus:border-blue-500"
+              required
             />
           </label>
 
@@ -51,12 +94,21 @@ export default function SignupPage() {
             </span>
             <input
               type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
               placeholder="*******"
               className="w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm outline-none focus:border-blue-500"
+              required
             />
           </label>
 
-          <Button className="w-full">Sign Up</Button>
+          {errorMessage && (
+            <p className="text-sm font-medium text-red-500">{errorMessage}</p>
+          )}
+
+          <Button className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing up..." : "Sign Up"}
+          </Button>
         </form>
 
         <p className="mt-5 text-sm text-slate-500">

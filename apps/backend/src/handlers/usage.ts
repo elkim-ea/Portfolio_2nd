@@ -39,7 +39,7 @@ export const handler = async (
       });
     }
 
-    const userId = (event.requestContext as any).authorizer?.claims?.sub;
+    const userId = (event.requestContext as any).authorizer?.jwt?.claims?.sub;
     if (!userId) {
       return response(401, {
         message: "Unauthorized",

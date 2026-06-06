@@ -6,8 +6,14 @@ import {
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { getEnv } from "../config/env.js";
-
-export type LearningRecordType = "correction" | "conversation" | "level-test";
+import type {
+  LearningRecord,
+  LearningRecordType,
+} from "../types/learningRecord.js";
+import type {
+  ExplanationLanguage,
+  ConversationTone,
+} from "../types/userProfile.js";
 
 export type SaveLearningRecordInput = {
   userId: string;
@@ -17,18 +23,8 @@ export type SaveLearningRecordInput = {
   outputData?: unknown;
   topic?: string | null;
   level?: string | null;
-};
-
-export type LearningRecord = {
-  userId: string;
-  recordId: string;
-  type: LearningRecordType;
-  inputText: string;
-  outputText: string;
-  outputData?: unknown;
-  topic?: string | null;
-  level?: string | null;
-  createdAt: string;
+  explanationLanguage?: ExplanationLanguage | null;
+  conversationTone?: ConversationTone | null;
 };
 
 const env = getEnv();
@@ -61,6 +57,12 @@ export const saveLearningRecord = async (
     ...(input.outputData !== undefined ? { outputData: input.outputData } : {}),
     ...(input.topic ? { topic: input.topic } : {}),
     ...(input.level ? { level: input.level } : {}),
+    ...(input.explanationLanguage
+      ? { explanationLanguage: input.explanationLanguage }
+      : {}),
+    ...(input.conversationTone
+      ? { conversationTone: input.conversationTone }
+      : {}),
   };
 
   await documentClient.send(

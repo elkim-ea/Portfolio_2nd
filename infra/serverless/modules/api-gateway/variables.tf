@@ -58,3 +58,33 @@ variable "cognito_app_client_id" {
   description = "Cognito User Pool App Client ID for JWT authorizer audience"
   type        = string
 }
+
+variable "profile_lambda_invoke_arn" {
+  description = "Invoke ARN for profile Lambda"
+  type        = string
+}
+
+variable "history_lambda_invoke_arn" {
+  description = "Invoke ARN for history Lambda"
+  type        = string
+}
+
+variable "usage_lambda_invoke_arn" {
+  description = "Invoke ARN for usage Lambda"
+  type        = string
+}
+
+variable "profile_lambda_function_name" {
+  description = "Profile Lambda function name"
+  type        = string
+}
+
+variable "history_lambda_function_name" {
+  description = "History Lambda function name"
+  type        = string
+}
+
+variable "usage_lambda_function_name" {
+  description = "Usage Lambda function name"
+  type        = string
+}

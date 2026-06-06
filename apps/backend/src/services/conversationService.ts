@@ -10,10 +10,17 @@ import type {
   ConversationResultData,
 } from "../types/aiResult.js";
 import { parseAiJson } from "../utils/parseAiJson.js";
+import type {
+  UserLevel,
+  ConversationTone,
+  ExplanationLanguage,
+} from "../types/userProfile.js";
 
 export type ConversationInput = {
   userId: string;
   topic?: string;
+  level?: UserLevel;
+  tone?: ConversationTone;
 };
 
 export type ConversationServiceResult = AiResponse<
@@ -23,14 +30,64 @@ export type ConversationServiceResult = AiResponse<
 
 function buildConversationPrompt(
   topic: string,
-  levelLabel: string,
-  conversationTone: string,
-  explanationLanguage: string,
+  level: UserLevel,
+  conversationTone: ConversationTone,
+  explanationLanguage: ExplanationLanguage,
 ) {
+  const levelRule =
+    level === "beginner"
+      ? "Use short and simple Korean sentences. Avoid difficult grammar. Each Korean line should be easy for beginners."
+      : level === "intermediate"
+        ? "Use practical intermediate Korean with common grammar patterns and natural expressions."
+        : "Use more natural and advanced Korean expressions, including nuance and realistic phrasing.";
+
+  const toneRule =
+    conversationTone === "polite"
+      ? `
+Use polite Korean speech style only.
+Use polite endings such as -요, -습니다, -습니까 where natural.
+Do not use casual 반말 endings such as -아/-어, -야, -지, -네.
+The dialogue may be used with strangers, teachers, staff, or formal situations.
+`.trim()
+      : `
+Use casual Korean speech style only.
+Use 반말 endings such as -아/-어, -야, -지, -네.
+Do not use polite endings or honorific expressions.
+Do not use endings such as -요, -습니다, -습니까, -세요, -입니다, -합니다.
+Do not use polite expressions such as 주세요, 괜찮으세요, 하시겠어요, 드릴게요, 부탁드립니다.
+If the topic normally requires politeness, reinterpret it as a casual roleplay between close friends.
+Every Korean sentence in "lines" and "usefulExpressions" must be casual 반말.
+If any Korean sentence contains polite speech, rewrite it into casual Korean before returning JSON.
+`.trim();
+
+  const explanationRule =
+    explanationLanguage === "ko"
+      ? `
+Write englishMeaning and explanationEnglish values in Korean only, except romanization.
+Keep JSON key names unchanged.
+`.trim()
+      : explanationLanguage === "en"
+        ? `
+Write englishMeaning, explanationEnglish, and grammarTipEnglish in English only.
+Only Korean dialogue fields may contain Korean.
+`.trim()
+        : `
+Use English as the main explanation language, and include Korean support only where useful.
+`.trim();
+
   return `
-User Korean level: ${levelLabel}
+User Korean level: ${level}
 Conversation tone: ${conversationTone}
 Explanation language: ${explanationLanguage}
+
+Level rule:
+${levelRule}
+
+Tone rule:
+${toneRule}
+
+Explanation rule:
+${explanationRule}
 
 You are a Korean tutor for foreign learners.
 
@@ -71,10 +128,18 @@ JSON schema:
 }
 
 Rules:
-- lines must include at least 2 lines.
+- lines must include at least 4 lines.
 - role must be only "teacher" or "student".
 - usefulExpressions must contain 2 to 4 items.
-- Korean should match the user's level.
+- Korean must match the selected user level.
+- Korean must match the selected conversation tone.
+- If tone is polite, use polite endings such as -요, -습니다 where natural.
+- If tone is casual, every Korean sentence must be 반말.
+- If tone is casual, do not include Korean sentences ending with 요, 니다, 까요, 세요, 입니다, 합니다.
+- If tone is casual, do not use 주세요, 괜찮으세요, 하시겠어요, 드릴게요, 부탁드립니다.
+- If tone is casual, the topic must be treated as a conversation between close friends.
+- Do not ignore the selected tone.
+- Do not ignore the selected explanation language.
   `.trim();
 }
 
@@ -107,10 +172,14 @@ function formatConversationOutput(result: ConversationResultData): string {
 export const generateConversation = async (
   input: ConversationInput,
 ): Promise<ConversationServiceResult> => {
-  const topic = input.topic ?? "ordering food at a restaurant";
   const userId = input.userId;
+  const topic = input.topic ?? "ordering food at a restaurant";
 
   const profile = await getOrCreateUserProfile(userId);
+
+  const selectedLevel = input.level ?? profile.currentLevel;
+  const selectedTone = input.tone ?? profile.conversationTone;
+  const selectedExplanationLanguage = profile.explanationLanguage;
 
   await checkUsageLimit({
     userId,
@@ -118,18 +187,19 @@ export const generateConversation = async (
   });
 
   const bedrockResult = await generateText({
-  task: "conversation",
-  prompt: buildConversationPrompt(
-    topic,
-    profile.levelLabel,
-    profile.conversationTone,
-    profile.explanationLanguage,
-  ),
-});
+    task: "conversation",
+    prompt: buildConversationPrompt(
+      topic,
+      selectedLevel,
+      selectedTone,
+      selectedExplanationLanguage,
+    ),
+  });
 
-const structuredResult = parseAiJson<ConversationResultData>(
-  bedrockResult.outputText,
-);
+  const structuredResult = parseAiJson<ConversationResultData>(
+    bedrockResult.outputText,
+  );
+
   const outputText = formatConversationOutput(structuredResult);
 
   await incrementUsage({
@@ -144,7 +214,8 @@ const structuredResult = parseAiJson<ConversationResultData>(
     outputText,
     outputData: structuredResult,
     topic,
-    level: profile.levelLabel,
+    level: selectedLevel,
+    conversationTone: selectedTone,
   });
 
   return {
@@ -152,6 +223,6 @@ const structuredResult = parseAiJson<ConversationResultData>(
     inputText: topic,
     result: structuredResult,
     outputText,
-    level: profile.levelLabel,
+    level: selectedLevel,
   };
 };

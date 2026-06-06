@@ -17,6 +17,30 @@ locals {
       lambda_invoke_arn    = var.level_test_lambda_invoke_arn
       lambda_function_name = var.level_test_lambda_function_name
     }
+
+    profile_get = {
+      route_key            = "GET /profile"
+      lambda_invoke_arn    = var.profile_lambda_invoke_arn
+      lambda_function_name = var.profile_lambda_function_name
+    }
+
+    profile_put = {
+      route_key            = "PUT /profile"
+      lambda_invoke_arn    = var.profile_lambda_invoke_arn
+      lambda_function_name = var.profile_lambda_function_name
+    }
+
+    history = {
+      route_key            = "GET /history"
+      lambda_invoke_arn    = var.history_lambda_invoke_arn
+      lambda_function_name = var.history_lambda_function_name
+    }
+
+    usage = {
+      route_key            = "GET /usage"
+      lambda_invoke_arn    = var.usage_lambda_invoke_arn
+      lambda_function_name = var.usage_lambda_function_name
+    }
   }
 }
 
@@ -28,7 +52,9 @@ resource "aws_apigatewayv2_api" "http_api" {
     allow_origins = var.cors_allowed_origins
     allow_methods = [
       "OPTIONS",
-      "POST"
+      "GET",
+      "POST",
+      "PUT"
     ]
     allow_headers = [
       "content-type",

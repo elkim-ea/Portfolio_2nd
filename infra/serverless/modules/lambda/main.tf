@@ -17,6 +17,24 @@ locals {
       handler       = "levelTest.handler"
       zip_path      = var.level_test_zip_path
     }
+
+    profile = {
+      function_name = "${var.project_name}-${var.environment}-profile"
+      handler       = "profile.handler"
+      zip_path      = var.profile_zip_path
+    }
+
+    history = {
+      function_name = "${var.project_name}-${var.environment}-history"
+      handler       = "history.handler"
+      zip_path      = var.history_zip_path
+    }
+
+    usage = {
+      function_name = "${var.project_name}-${var.environment}-usage"
+      handler       = "usage.handler"
+      zip_path      = var.usage_zip_path
+    }
   }
 }
 
@@ -29,6 +47,8 @@ resource "aws_lambda_function" "functions" {
   runtime          = "nodejs20.x"
   filename         = each.value.zip_path
   source_code_hash = filebase64sha256(each.value.zip_path)
+
+  kms_key_arn = var.lambda_environment_kms_key_arn
 
   memory_size = 512
   timeout     = 30
@@ -63,3 +83,4 @@ resource "aws_cloudwatch_log_group" "lambda" {
 
   tags = var.tags
 }
+

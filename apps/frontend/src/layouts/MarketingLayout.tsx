@@ -1,10 +1,30 @@
+import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router";
+import { getCurrentUser } from "aws-amplify/auth";
 
 export default function MarketingLayout() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await getCurrentUser();
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-10">
-        <Link to="/" className="text-lg font-bold text-slate-950">
+        <Link
+          to={isAuthenticated ? "/dashboard" : "/"}
+          className="text-lg font-bold text-slate-950"
+        >
           KoreanMate
         </Link>
 
@@ -14,10 +34,10 @@ export default function MarketingLayout() {
           </Link>
 
           <Link
-            to="/login"
+            to={isAuthenticated ? "/dashboard" : "/login"}
             className="rounded-xl bg-blue-600 px-7 py-3 text-sm font-bold text-white hover:bg-blue-700"
           >
-            Get Started
+            {isAuthenticated ? "Dashboard" : "Get Started"}
           </Link>
         </nav>
       </header>

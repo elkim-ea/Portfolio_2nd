@@ -25,6 +25,65 @@ resource "aws_ssm_parameter" "bedrock_model_id" {
   tags = local.common_tags
 }
 
+data "aws_caller_identity" "current" {}
+
+resource "aws_kms_key" "lambda_environment" {
+  description         = "KMS key for ${var.project_name} ${var.environment} Lambda environment variables"
+  enable_key_rotation = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "EnableAccountRootPermissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = local.common_tags
+}
+
+resource "aws_iam_role_policy" "lambda_environment_kms" {
+  name = "${var.project_name}-${var.environment}-lambda-environment-kms"
+  role = module.iam.lambda_execution_role_name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowLambdaEnvironmentKMSUse"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey",
+          "kms:CreateGrant"
+        ]
+        Resource = aws_kms_key.lambda_environment.arn
+        Condition = {
+          StringEquals = {
+            "kms:ViaService"    = "lambda.${var.aws_region}.amazonaws.com"
+            "kms:CallerAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_kms_alias" "lambda_environment" {
+  name          = "alias/${var.project_name}-${var.environment}-lambda-env"
+  target_key_id = aws_kms_key.lambda_environment.key_id
+}
+
 module "lambda" {
   source = "../../modules/lambda"
 
@@ -34,9 +93,14 @@ module "lambda" {
 
   lambda_execution_role_arn = module.iam.lambda_execution_role_arn
 
+  lambda_environment_kms_key_arn = aws_kms_key.lambda_environment.arn
+
   correction_zip_path   = "../../../../apps/backend/lambda-packages/correction.zip"
   conversation_zip_path = "../../../../apps/backend/lambda-packages/conversation.zip"
   level_test_zip_path   = "../../../../apps/backend/lambda-packages/levelTest.zip"
+  profile_zip_path      = "../../../../apps/backend/lambda-packages/profile.zip"
+  history_zip_path      = "../../../../apps/backend/lambda-packages/history.zip"
+  usage_zip_path        = "../../../../apps/backend/lambda-packages/usage.zip"
 
   learning_records_table_name = module.dynamodb.learning_records_table_name
   usage_limits_table_name     = module.dynamodb.usage_limits_table_name
@@ -51,7 +115,8 @@ module "lambda" {
   tags = local.common_tags
 
   depends_on = [
-    module.iam
+    module.iam,
+    aws_iam_role_policy.lambda_environment_kms
   ]
 }
 
@@ -64,10 +129,16 @@ module "api_gateway" {
   correction_lambda_invoke_arn   = module.lambda.correction_invoke_arn
   conversation_lambda_invoke_arn = module.lambda.conversation_invoke_arn
   level_test_lambda_invoke_arn   = module.lambda.level_test_invoke_arn
+  profile_lambda_invoke_arn      = module.lambda.profile_invoke_arn
+  history_lambda_invoke_arn      = module.lambda.history_invoke_arn
+  usage_lambda_invoke_arn        = module.lambda.usage_invoke_arn
 
   correction_lambda_function_name   = module.lambda.correction_function_name
   conversation_lambda_function_name = module.lambda.conversation_function_name
   level_test_lambda_function_name   = module.lambda.level_test_function_name
+  profile_lambda_function_name      = module.lambda.profile_function_name
+  history_lambda_function_name      = module.lambda.history_function_name
+  usage_lambda_function_name        = module.lambda.usage_function_name
 
   cognito_issuer_url    = module.cognito.issuer_url
   cognito_app_client_id = module.cognito.user_pool_client_id

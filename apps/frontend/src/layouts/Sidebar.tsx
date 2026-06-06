@@ -1,5 +1,9 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
-import { mockProfile, mockUsage } from "../data/mockData";
+import { getProfile } from "../api/profileApi";
+import { getUsage } from "../api/usageApi";
+import type { UserProfile } from "../types/userProfile";
+import type { UsageLimit } from "../types/usageLimit";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard" },
@@ -11,6 +15,27 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [usage, setUsage] = useState<UsageLimit | null>(null);
+
+  useEffect(() => {
+    const loadSidebarData = async () => {
+      try {
+        const [profileResponse, usageResponse] = await Promise.all([
+          getProfile(),
+          getUsage(),
+        ]);
+
+        setProfile(profileResponse.profile);
+        setUsage(usageResponse.usage);
+      } catch (error) {
+        console.error("Failed to load sidebar data:", error);
+      }
+    };
+
+    loadSidebarData();
+  }, []);
+
   return (
     <aside className="sticky top-16 flex h-[calc(100vh-4rem)] w-64 shrink-0 flex-col bg-slate-950 px-5 py-6 text-white">
       <div className="text-center">
@@ -47,14 +72,14 @@ export default function Sidebar() {
         <div className="rounded-2xl bg-slate-900 p-4">
           <p className="text-sm font-medium text-slate-400">Current Level</p>
           <p className="mt-1 text-base font-bold text-white">
-            {mockProfile.levelLabel}
+            {profile?.levelLabel ?? "Not tested yet"}
           </p>
 
           <div className="my-4 border-t border-slate-700" />
 
           <p className="text-sm font-medium text-slate-400">Daily Usage</p>
           <p className="mt-1 text-base font-bold text-white">
-            {mockUsage.totalCount} / 5 requests
+            {usage?.totalCount ?? 0} / {usage?.dailyLimit ?? 25} requests
           </p>
         </div>
       </div>

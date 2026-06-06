@@ -72,3 +72,23 @@ variable "lambda_execution_role_arn" {
   description = "Lambda execution role ARN"
   type        = string
 }
+
+variable "lambda_environment_kms_key_arn" {
+  description = "KMS key ARN for Lambda environment variable encryption"
+  type        = string
+}
+
+variable "profile_zip_path" {
+  description = "Path to profile Lambda zip"
+  type        = string
+}
+
+variable "history_zip_path" {
+  description = "Path to history Lambda zip"
+  type        = string
+}
+
+variable "usage_zip_path" {
+  description = "Path to usage Lambda zip"
+  type        = string
+}

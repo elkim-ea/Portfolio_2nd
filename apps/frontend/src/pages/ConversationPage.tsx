@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import type { LearningLevel } from "../types/learningRecord";
+import type { ConversationTone } from "../types/userProfile";
 import Card from "../components/common/Card";
 import PageHeader from "../components/common/PageHeader";
 import Button from "../components/common/Button";
@@ -6,9 +8,12 @@ import Badge from "../components/common/Badge";
 import type { ConversationApiResponse } from "../types/aiResult";
 import { requestConversation } from "../api/conversationApi";
 
-
 export default function ConversationPage() {
   const [topic, setTopic] = useState("ordering food at a restaurant");
+  const [selectedLevel, setSelectedLevel] =
+    useState<LearningLevel>("beginner");
+  const [tone, setTone] = useState<ConversationTone>("polite");
+
   const [result, setResult] = useState<ConversationApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,89 +22,91 @@ export default function ConversationPage() {
   const koreanSpeechText = result
     ? result.result.lines.map((line) => line.korean).join(" ")
     : "";
-  
+
   useEffect(() => {
-  if (!("speechSynthesis" in window)) {
-    return;
-  }
+    if (!("speechSynthesis" in window)) {
+      return;
+    }
 
-  const loadVoices = () => {
-    setVoices(window.speechSynthesis.getVoices());
-  };
+    const loadVoices = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
 
-  loadVoices();
+    loadVoices();
 
-  window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
 
-  return () => {
-    window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
-  };
-}, []);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+    };
+  }, []);
 
   const handleGenerate = async () => {
-  const trimmedTopic = topic.trim();
+    const trimmedTopic = topic.trim();
 
-  if (!trimmedTopic) {
-    return;
-  }
+    if (!trimmedTopic) {
+      return;
+    }
 
-  try {
-    setIsLoading(true);
-    setErrorMessage("");
-    setResult(null);
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      setResult(null);
 
-    const data = await requestConversation({
-      topic: trimmedTopic,
-    });
+      const data = await requestConversation({
+        topic: trimmedTopic,
+        level: selectedLevel,
+        tone,
+      });
 
-    setResult(data);
-  } catch (error) {
-    console.error("Failed to request conversation:", error);
-    setErrorMessage(
-  error instanceof Error
-    ? error.message
-    : "Failed to correct your Korean text. Please try again.",
-);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleSpeak = () => {
-  const text = koreanSpeechText.trim();
-
-  if (!text) {
-    alert("There is no Korean text to play.");
-    return;
-  }
-
-  if (!("speechSynthesis" in window)) {
-    alert("This browser does not support speech playback.");
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ko-KR";
-  utterance.rate = 0.85;
-  utterance.pitch = 1;
-
-  const koreanVoice = voices.find((voice) =>
-    voice.lang.toLowerCase().startsWith("ko"),
-  );
-
-  if (koreanVoice) {
-    utterance.voice = koreanVoice;
-  }
-
-  utterance.onerror = (event) => {
-    console.error("Speech synthesis error:", event);
-    alert("Failed to play Korean audio.");
+      setResult(data);
+    } catch (error) {
+      console.error("Failed to request conversation:", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to generate conversation. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  window.speechSynthesis.speak(utterance);
-};
+  const handleSpeak = () => {
+    const text = koreanSpeechText.trim();
+
+    if (!text) {
+      alert("There is no Korean text to play.");
+      return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+      alert("This browser does not support speech playback.");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ko-KR";
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+
+    const koreanVoice = voices.find((voice) =>
+      voice.lang.toLowerCase().startsWith("ko"),
+    );
+
+    if (koreanVoice) {
+      utterance.voice = koreanVoice;
+    }
+
+    utterance.onerror = (event) => {
+      console.error("Speech synthesis error:", event);
+      alert("Failed to play Korean audio.");
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
     <div>
@@ -127,24 +134,41 @@ const handleSpeak = () => {
             />
 
             <div className="grid gap-3 md:grid-cols-2">
-              <select className="rounded-xl border border-slate-200 bg-white p-3 text-sm">
+              <select
+                value={selectedLevel}
+                onChange={(event) =>
+                  setSelectedLevel(event.target.value as LearningLevel)
+                }
+                className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
+              >
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
               </select>
 
-              <select className="rounded-xl border border-slate-200 bg-white p-3 text-sm">
+              <select
+                value={tone}
+                onChange={(event) =>
+                  setTone(event.target.value as ConversationTone)
+                }
+                className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
+              >
                 <option value="polite">Polite</option>
                 <option value="casual">Casual</option>
               </select>
             </div>
 
-            <Button onClick={handleGenerate} disabled={!topic.trim() || isLoading}>
-            {isLoading ? "Generating..." : "Generate Conversation"}
+            <Button
+              onClick={handleGenerate}
+              disabled={!topic.trim() || isLoading}
+            >
+              {isLoading ? "Generating..." : "Generate Conversation"}
             </Button>
 
             {errorMessage && (
-            <p className="text-sm font-medium text-red-500">{errorMessage}</p>
+              <p className="text-sm font-medium text-red-500">
+                {errorMessage}
+              </p>
             )}
           </div>
         </Card>
@@ -156,22 +180,22 @@ const handleSpeak = () => {
             </h2>
 
             <Button
-            onClick={handleSpeak}
-            disabled={!result || !koreanSpeechText.trim() || isLoading}
+              onClick={handleSpeak}
+              disabled={!result || !koreanSpeechText.trim() || isLoading}
             >
-            Play Korean Audio
+              Play Korean Audio
             </Button>
           </div>
 
           {isLoading ? (
             <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-                Generating conversation...
+              Generating conversation...
             </div>
-            ) : !result ? (
+          ) : !result ? (
             <div className="mt-4 min-h-64 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
-                The generated conversation will appear here.
+              The generated conversation will appear here.
             </div>
-            ) : (
+          ) : (
             <div className="mt-4 space-y-5">
               <section className="rounded-xl bg-slate-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-400">

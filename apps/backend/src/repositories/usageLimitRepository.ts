@@ -22,7 +22,11 @@ const dynamoDbClient = new DynamoDBClient({
 const documentClient = DynamoDBDocumentClient.from(dynamoDbClient);
 
 export const getTodayDate = (): string => {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const kstOffsetMs = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffsetMs);
+
+  return kstDate.toISOString().slice(0, 10);
 };
 
 const getTtlAfterDays = (days: number): number => {

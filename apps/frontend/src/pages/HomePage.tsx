@@ -1,10 +1,13 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { getCurrentUser } from "aws-amplify/auth";
 import Card from "../components/common/Card";
 
 const features = [
   {
     title: "Level Test",
-    description: "Set your learning level automatically with a quick assessment.",
+    description:
+      "Set your learning level automatically with a quick assessment.",
   },
   {
     title: "Writing Correction",
@@ -12,7 +15,8 @@ const features = [
   },
   {
     title: "Conversation Practice",
-    description: "Generate Korean conversation practice for real-life situations.",
+    description:
+      "Generate Korean conversation practice for real-life situations.",
   },
   {
     title: "Learning History",
@@ -21,6 +25,21 @@ const features = [
 ];
 
 export default function HomePage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await getCurrentUser();
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   return (
     <main className="mx-auto max-w-7xl px-10 py-28">
       <section>
@@ -29,14 +48,15 @@ export default function HomePage() {
         </h1>
 
         <p className="mt-6 max-w-3xl text-xl font-medium text-slate-500">
-          Manage Korean writing correction, conversation practice, and level assessment in one place.
+          Manage Korean writing correction, conversation practice, and level
+          assessment in one place.
         </p>
 
         <Link
-          to="/signup"
+          to={isAuthenticated ? "/dashboard" : "/login"}
           className="mt-10 inline-flex rounded-xl bg-blue-600 px-7 py-4 text-sm font-bold text-white hover:bg-blue-700"
         >
-          Get Started
+          {isAuthenticated ? "Go to Dashboard" : "Get Started"}
         </Link>
       </section>
 

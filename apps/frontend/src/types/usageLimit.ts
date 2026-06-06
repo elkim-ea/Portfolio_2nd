@@ -3,6 +3,12 @@ export type UsageLimit = {
   usageDate: string;
   correctionCount: number;
   conversationCount: number;
+  levelTestCount: number;
   totalCount: number;
-  ttl: number;
+  dailyLimit: number;
+  correctionLimit: number;
+  conversationLimit: number;
+  levelTestLimit: number;
+  remainingCount: number;
+  ttl?: number;
 };

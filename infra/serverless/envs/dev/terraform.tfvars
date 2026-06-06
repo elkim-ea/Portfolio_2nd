@@ -10,3 +10,5 @@ budget_notification_email = "eunaekim0502@gmail.com"
 
 grafana_aws_account_id = "008923505280"
 grafana_external_id    = "1677935"
+
+lambda_kms_key_arn = "arn:aws:kms:ap-northeast-2:127696278675:key/ca0e4e01-5d8e-40ec-82ed-df9ef77a36c7"
