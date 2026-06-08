@@ -66,8 +66,8 @@ KoreanMate는 한국어 학습자를 위한 AI 기반 학습 보조 서비스다
 | Compute Layer | Lambda | 기능별 백엔드 로직 실행 |
 | AI Layer | Bedrock | 교정, 회화, 레벨 테스트 응답 생성 |
 | Data Layer | DynamoDB | 학습 기록, 사용량, 프로필 저장 |
-| Security / Config / Cost Layer | IAM, KMS, SSM, Budgets, WAF | 권한, 암호화, 설정, 비용 제어 |
 | Observability / Audit Layer | CloudWatch, X-Ray, Grafana, CloudTrail | 로그, 지표, 추적, 감사 |
+| Security / Config / Cost Layer | IAM, KMS, SSM, Budgets, WAF | 권한, 암호화, 설정, 비용 제어 |
 
 프론트엔드는 S3에 저장하고 CloudFront로 배포한다. S3는 직접 공개하지 않고 CloudFront OAC를 통해서만 접근하도록 설계했다. CloudFront 앞단에는 WAF를 연결하여 기본적인 요청 필터링과 Rate Limit을 적용한다.
 
