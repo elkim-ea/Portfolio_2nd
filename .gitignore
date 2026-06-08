@@ -16,3 +16,6 @@ apps/frontend/dist/
 apps/backend/dist/
 apps/backend/lambda-packages/
 node_modules/
+
+# 대본
+docs/serverless/presentation-script.*
