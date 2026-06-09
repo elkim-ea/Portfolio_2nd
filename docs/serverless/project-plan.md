@@ -403,121 +403,119 @@ Deploy Pipeline은 수동 실행으로만 동작한다.
 
 ---
 
-## 16. WBS
+## 16. WBS 및 일정 계획
 
-| 단계 | 작업 | 산출물 | 상태 |
-|---|---|---|---|
-| 1 | 프로젝트 주제 선정 | Project Overview | 완료 |
-| 2 | 문제 정의 및 요구사항 작성 | project-plan.md | 완료 |
-| 3 | 화면 구조 설계 | User Flow / Wireframe | 완료 |
-| 4 | 데이터 모델링 | DynamoDB Table Design | 완료 |
-| 5 | 백엔드 로컬 API 구현 | Lambda Handler / Service | 완료 |
-| 6 | Bedrock Mock 연동 | bedrockClient mock | 완료 |
-| 7 | DynamoDB Repository 구현 | Repository Layer | 완료 |
-| 8 | 실제 Bedrock 연동 | Bedrock API 호출 | 완료 |
-| 9 | 사용량 제한 구현 | UsageLimits | 완료 |
-| 10 | Terraform DynamoDB 구성 | DynamoDB Module | 완료 |
-| 11 | Terraform Lambda 구성 | Lambda Module | 완료 |
-| 12 | API Gateway 구성 | API Module | 완료 |
-| 13 | Cognito 구성 | User Pool / App Client | 완료 |
-| 14 | JWT Authorizer 연결 | API 인증 구조 | 완료 |
-| 15 | S3 + CloudFront 구성 | Frontend Hosting | 완료 |
-| 16 | IAM Role 분리 | IAM Module | 완료 |
-| 17 | SSM Parameter Store 적용 | Bedrock Model ID 관리 | 완료 |
-| 18 | KMS 적용 | Lambda 환경변수 암호화 | 완료 |
-| 19 | WAF 적용 | CloudFront WAF | 완료 |
-| 20 | CloudTrail 구성 | Audit Trail | 완료 |
-| 21 | AWS Budgets 구성 | 비용 알림 | 완료 |
-| 22 | CloudWatch Alarm 구성 | 운영 알람 | 완료 |
-| 23 | Grafana Cloud 연동 | CloudWatch Read Role | 부분 완료 |
-| 24 | GitHub Actions CI 구성 | serverless-ci.yml | 완료 |
-| 25 | GitHub Actions Deploy 구성 | serverless-deploy.yml | 완료 |
-| 26 | Trivy 보안 스캔 추가 | Security Scan | 완료 |
-| 27 | 설계서 작성 | serverless-design.md | 완료 |
-| 28 | 트러블슈팅 문서 작성 | troubleshooting.md | 진행 예정 |
-| 29 | Runbook 작성 | runbook.md | 진행 예정 |
-| 30 | 최종 README 정리 | README.md | 진행 예정 |
-
----
-
-## 17. 일정 계획
-
-| 단계 | 주요 작업 | 상태 |
-|---|---|---|
-| 기획 | 문제 정의, 목표, 기능 범위 정의 | 완료 |
-| 설계 | 아키텍처, 데이터, 인증, 보안, 비용 구조 설계 | 완료 |
-| 로컬 개발 | 프론트엔드, 백엔드 API, Mock 구성 | 완료 |
-| AWS 연동 | DynamoDB, Bedrock, Cognito 연동 | 완료 |
-| IaC | Terraform 모듈 구성 | 완료 |
-| 배포 | S3 + CloudFront, API Gateway + Lambda 배포 | 완료 |
-| 운영 | CloudWatch, CloudTrail, Budgets, Grafana 연동 | 부분 완료 |
-| 자동화 | GitHub Actions CI/CD 구성 | 완료 |
-| 문서화 | README, 설계서, 트러블슈팅, Runbook 작성 | 진행 중 |
-
-
+| 단계 | 기간  | 구분     | 주요 작업                        | 산출물                          |
+| -- | --- | ------ | ---------------------------- | ---------------------------- |
+| 1  | 1주차 | 기획     | 프로젝트 주제 선정                   | Project Overview             |
+| 2  | 1주차 | 기획     | 문제 정의, 목표, 기능 범위 정의          | project-plan.md              |
+| 3  | 1주차 | 설계     | 화면 구조 설계                     | User Flow / Wireframe        |
+| 4  | 1주차 | 설계     | 데이터 모델링                      | DynamoDB Table Design        |
+| 5  | 2주차 | 로컬 개발  | 백엔드 로컬 API 구현                | Lambda Handler / Service     |
+| 6  | 2주차 | 로컬 개발  | Bedrock Mock 연동              | bedrockClient mock           |
+| 7  | 2주차 | 로컬 개발  | DynamoDB Repository 구현       | Repository Layer             |
+| 8  | 2주차 | AWS 연동 | 실제 Bedrock 연동                | Bedrock API 호출               |
+| 9  | 2주차 | AWS 연동 | 사용량 제한 구현                    | UsageLimits                  |
+| 10 | 3주차 | IaC    | Terraform DynamoDB 구성        | DynamoDB Module              |
+| 11 | 3주차 | IaC    | Terraform Lambda 구성          | Lambda Module                |
+| 12 | 3주차 | IaC    | API Gateway 구성               | API Module                   |
+| 13 | 3주차 | 인증/보안  | Cognito 구성                   | User Pool / App Client       |
+| 14 | 3주차 | 인증/보안  | JWT Authorizer 연결            | API 인증 구조                    |
+| 15 | 4주차 | 배포     | S3 + CloudFront 구성           | Frontend Hosting             |
+| 16 | 4주차 | 인증/보안  | IAM Role 분리                  | IAM Module                   |
+| 17 | 4주차 | 설정 관리  | SSM Parameter Store 적용       | Bedrock Model ID 관리          |
+| 18 | 4주차 | 보안     | KMS 적용                       | Lambda 환경변수 암호화              |
+| 19 | 4주차 | 보안     | WAF 적용                       | CloudFront WAF               |
+| 20 | 4주차 | 감사     | CloudTrail 구성                | Audit Trail                  |
+| 21 | 4주차 | 비용 관리  | AWS Budgets 구성               | 비용 알림                        |
+| 22 | 5주차 | 운영     | CloudWatch Alarm 구성          | 운영 알람                        |
+| 23 | 5주차 | 운영     | Grafana Cloud 연동 및 그래프 변동 확인 | CloudWatch Metrics Dashboard |
+| 24 | 5주차 | 자동화    | GitHub Actions CI 구성         | serverless-ci.yml            |
+| 25 | 5주차 | 자동화    | GitHub Actions Deploy 구성     | serverless-deploy.yml        |
+| 26 | 5주차 | 보안 자동화 | Trivy 보안 스캔 추가               | Security Scan                |
+| 27 | 6주차 | 문서화    | 설계서 작성                       | serverless-design.md         |
+| 28 | 6주차 | 문서화    | Runbook 작성                   | runbook.md                   |
+| 29 | 6주차 | 문서화    | 트러블슈팅 문서 작성                  | troubleshooting.md           |
+| 30 | 6주차 | 문서화    | 최종 README 정리                 | README.md                    |
 
 ---
 
+## 17. 주요 리스크와 대응 방안
 
-## 20. 주요 리스크와 대응 방안
-
-| 리스크 | 영향 | 대응 방안 |
-|---|---|---|
-| Bedrock 호출 비용 증가 | 예상보다 높은 비용 발생 | 사용자별 일일 사용량 제한, Budgets 적용 |
-| Cognito 인증 오류 | API 접근 불가 | JWT 만료/갱신 테스트, 401 오류 구분 |
-| Lambda 환경변수 누락 | 런타임 실패 | env schema 검증, Terraform output 확인 |
-| API 401/429 혼동 | 원인 파악 지연 | 인증 오류와 사용량 제한 오류 메시지 분리 |
-| CloudFront 캐시 문제 | 최신 프론트 반영 지연 | Invalidation 자동화 |
-| DynamoDB 데이터 정합성 | 사용량 증가와 기록 저장 불일치 | TransactWriteItems 향후 검토 |
-| GitHub Actions Secret 관리 | 장기 Access Key 노출 위험 | GitHub OIDC 전환 |
-| Bedrock IAM 권한 과다 | 권한 범위 과다 | Foundation Model ARN으로 제한 |
-| CORS 설정 중복 | 보안 정책 혼선 | API Gateway CORS 중심으로 정리 |
-| 로그 비용 증가 | 운영 비용 증가 | Log Retention / Lifecycle 설정 |
-
----
-
-## 21. 완료 기준
-
-| 구분 | 완료 기준 |
-|---|---|
-| 기능 | correction, conversation, level-test API가 실제 Bedrock과 연동되어 동작 |
-| 인증 | 인증되지 않은 사용자는 보호 API 접근 불가 |
-| 데이터 | 사용자별 학습 기록과 사용량이 DynamoDB에 저장 |
-| 배포 | CloudFront URL로 프론트엔드 접근 가능 |
-| IaC | 주요 AWS 리소스가 Terraform으로 관리 |
-| CI/CD | GitHub Actions로 CI와 Deploy 흐름 분리 |
-| 보안 | Cognito, JWT Authorizer, IAM, KMS, WAF 적용 |
-| 운영 | CloudWatch Logs / Alarm으로 장애 원인 확인 가능 |
-| 감사 | CloudTrail로 AWS API 호출 이력 확인 가능 |
-| 비용 | 사용량 제한과 Budgets로 비용 폭증 방지 |
-| 문서 | 계획서, 설계서, 트러블슈팅, README, Runbook 정리 |
+| 리스크                      | 영향                   | 대응 방안                                                  |
+| ------------------------ | -------------------- | ------------------------------------------------------ |
+| Bedrock 호출 비용 증가         | 예상보다 높은 비용 발생        | 사용자별 일일 사용량 제한, AWS Budgets 적용                         |
+| Cognito 인증 오류            | 보호 API 접근 불가         | JWT 만료, 토큰 갱신, Authorizer 설정을 분리하여 확인                  |
+| Lambda 환경변수 누락           | 런타임 오류 발생            | Terraform output, Lambda 환경변수, env schema 검증           |
+| API 401 / 429 혼동         | 원인 파악 지연             | 인증 오류와 사용량 제한 오류 메시지 분리                                |
+| CloudFront 캐시 문제         | 최신 프론트엔드 반영 지연       | 배포 후 CloudFront Invalidation 수행                        |
+| DynamoDB 데이터 정합성         | 사용량 증가와 기록 저장 불일치 가능 | 향후 TransactWriteItems 적용 검토                            |
+| GitHub Actions Secret 관리 | 장기 Access Key 노출 위험  | 향후 GitHub OIDC 기반 AssumeRole 전환                        |
+| Bedrock IAM 권한 과다        | 권한 범위가 넓음            | 향후 Foundation Model ARN 단위로 권한 제한                      |
+| CORS 설정 중복               | API 호출 정책 혼선         | API Gateway CORS 설정을 기준으로 관리                           |
+| 로그 비용 증가                 | 운영 비용 증가             | CloudWatch Logs Retention 및 CloudTrail S3 Lifecycle 적용 |
 
 ---
 
-## 22. 최종 산출물
+## 18. 현재 한계와 개선 방향
 
-| 문서 | 목적 | 상태 |
-|---|---|---|
-| project-plan.md | 프로젝트 목적, 문제 정의, 요구사항, 일정 정리 | 작성 |
-| serverless-design.md | 전체 Serverless 설계 설명 | 작성 |
-| troubleshooting.md | 문제, 시도, 해결, 배운 점 정리 | 예정 |
-| runbook.md | 장애 대응 절차 정리 | 예정 |
-| README.md | 포트폴리오 메인 설명 문서 | 예정 |
+현재 프로젝트는 포트폴리오용 `dev` 환경 기준으로 설계되어 있다. 운영 수준으로 확장하려면 다음 개선이 필요하다.
+
+| 항목          | 현재 상태                               | 개선 방향                                                              |
+| ----------- | ----------------------------------- | ------------------------------------------------------------------ |
+| 배포 롤백       | 자동 롤백 미구현                           | Lambda Version/Alias, 이전 frontend artifact 백업, smoke test 기반 롤백 추가 |
+| CI/CD 인증    | GitHub Secrets 기반 AWS Access Key 사용 | GitHub OIDC 기반 AssumeRole 전환                                       |
+| Bedrock IAM | Bedrock 호출 권한 범위가 넓음                | 사용하는 Foundation Model ARN 단위로 제한                                   |
+| AI 응답 검증    | TypeScript 타입 중심 검증                 | Zod 기반 런타임 Schema 검증 추가                                            |
+| 데이터 정합성     | 사용량 증가와 학습 기록 저장이 분리됨               | DynamoDB TransactWriteItems 검토                                     |
+| History 조회  | 기본 조회 중심                            | Pagination 추가                                                      |
+| 알림          | CloudWatch Alarm 중심                 | SNS 또는 Slack 알림 연동                                                 |
+| 환경 분리       | dev 환경 중심                           | prod 환경 분리 검토                                                      |
+| Grafana     | 기본 메트릭 시각화 확인                       | Bedrock 실패율, 429 응답, Lambda Duration 중심 대시보드 고도화                   |
 
 ---
 
-## 23. 프로젝트의 핵심 차별점
+## 19. 완료 기준
+
+| 구분    | 완료 기준                                                         |
+| ----- | ------------------------------------------------------------- |
+| 기능    | correction, conversation, level-test API가 실제 Bedrock과 연동되어 동작 |
+| 인증    | 인증되지 않은 사용자는 보호 API에 접근할 수 없음                                 |
+| 데이터   | 사용자별 학습 기록과 사용량이 DynamoDB에 저장됨                                |
+| 배포    | CloudFront URL로 프론트엔드 접근 가능                                   |
+| IaC   | 주요 AWS 리소스가 Terraform으로 관리됨                                   |
+| CI/CD | GitHub Actions로 CI와 Deploy 흐름이 분리됨                            |
+| 보안    | Cognito, JWT Authorizer, IAM, KMS, WAF, Trivy가 적용됨            |
+| 운영    | CloudWatch Logs, Alarm, X-Ray, Grafana로 주요 지표 확인 가능           |
+| 감사    | CloudTrail로 AWS API 호출 이력 확인 가능                               |
+| 비용    | 사용량 제한과 AWS Budgets로 비용 폭증을 방지                                |
+| 문서    | README, 설계서, Runbook, Troubleshooting 문서 정리                   |
+
+---
+
+## 20. 최종 산출물
+
+| 문서                          | 목적                                     |
+| --------------------------- | -------------------------------------- |
+| `README.md`                 | 프로젝트 소개, 기술 스택, 아키텍처 요약, 실행/배포 흐름 정리   |
+| `docs/project-plan.md`      | 프로젝트 목적, 문제 정의, 요구사항, 일정, 리스크 정리       |
+| `docs/serverless-design.md` | Serverless 아키텍처, 요청 흐름, 보안, 비용, 관측성 설계 |
+| `docs/runbook.md`           | 운영 중 장애 상황별 확인 절차와 복구 방법 정리            |
+| `docs/troubleshooting.md`   | 실제 문제, 원인, 해결 과정, 배운 점 정리              |
+
+---
+
+## 21. 프로젝트의 핵심 차별점
 
 KoreanMate의 핵심 차별점은 다음과 같다.
 
-- AI 기능에 사용자별 일일 사용량 제한을 직접 구현했다.
-- Cognito JWT `sub` 기반으로 사용자 데이터를 분리했다.
-- DynamoDB를 학습 기록, 사용량, 프로필 테이블로 분리했다.
-- Terraform으로 주요 AWS 리소스를 코드화했다.
-- S3 + CloudFront + OAC로 프론트엔드를 배포했다.
-- API Gateway JWT Authorizer로 API를 보호했다.
-- CloudWatch, CloudTrail, Grafana, Budgets를 운영 설계에 포함했다.
-- GitHub Actions에서 CI와 Deploy를 분리했다.
-- Trivy로 보안 스캔을 CI에 포함했다.
-
-
+* AI 기능에 사용자별 일일 사용량 제한을 직접 구현했다.
+* Cognito JWT `sub` 기반으로 사용자 데이터를 분리했다.
+* DynamoDB를 학습 기록, 사용량, 프로필 테이블로 분리했다.
+* Terraform으로 주요 AWS 리소스를 코드화했다.
+* S3 + CloudFront + OAC로 프론트엔드를 배포했다.
+* API Gateway JWT Authorizer로 보호 API를 구성했다.
+* CloudWatch, X-Ray, CloudTrail, Grafana, Budgets를 운영 설계에 포함했다.
+* GitHub Actions에서 CI와 Deploy를 분리했다.
+* Trivy 보안 스캔을 CI에 포함했다.
+* Runbook과 Troubleshooting 문서를 통해 운영 대응 과정을 문서화했다.
