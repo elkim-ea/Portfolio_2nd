@@ -49,3 +49,19 @@ variable "lambda_kms_key_arn" {
   description = "KMS key ARN used to encrypt Lambda environment variables"
   type        = string
 }
+
+variable "github_owner" {
+  type        = string
+  description = "GitHub account or organization name"
+}
+
+variable "github_repo" {
+  type        = string
+  description = "GitHub repository name"
+}
+
+variable "github_branch" {
+  type        = string
+  description = "GitHub branch allowed to assume the deploy role"
+  default     = "main"
+}

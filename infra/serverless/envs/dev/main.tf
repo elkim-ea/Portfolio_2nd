@@ -291,3 +291,15 @@ module "iam" {
 
   tags = local.common_tags
 }
+
+module "github_oidc" {
+  source = "../../modules/github-oidc"
+
+  project_name  = var.project_name
+  environment   = var.environment
+  github_owner  = var.github_owner
+  github_repo   = var.github_repo
+  github_branch = var.github_branch
+
+  tags = local.common_tags
+}

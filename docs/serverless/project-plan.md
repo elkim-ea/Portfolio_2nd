@@ -411,32 +411,31 @@ Deploy Pipeline은 수동 실행으로만 동작한다.
 | 2  | 1주차 | 기획     | 문제 정의, 목표, 기능 범위 정의          | project-plan.md              |
 | 3  | 1주차 | 설계     | 화면 구조 설계                     | User Flow / Wireframe        |
 | 4  | 1주차 | 설계     | 데이터 모델링                      | DynamoDB Table Design        |
-| 5  | 2주차 | 로컬 개발  | 백엔드 로컬 API 구현                | Lambda Handler / Service     |
-| 6  | 2주차 | 로컬 개발  | Bedrock Mock 연동              | bedrockClient mock           |
+| 5  | 1주차 | 로컬 개발  | 백엔드 로컬 API 구현                | Lambda Handler / Service     |
+| 6  | 1주차 | 로컬 개발  | Bedrock Mock 연동              | bedrockClient mock           |
 | 7  | 2주차 | 로컬 개발  | DynamoDB Repository 구현       | Repository Layer             |
 | 8  | 2주차 | AWS 연동 | 실제 Bedrock 연동                | Bedrock API 호출               |
 | 9  | 2주차 | AWS 연동 | 사용량 제한 구현                    | UsageLimits                  |
-| 10 | 3주차 | IaC    | Terraform DynamoDB 구성        | DynamoDB Module              |
-| 11 | 3주차 | IaC    | Terraform Lambda 구성          | Lambda Module                |
-| 12 | 3주차 | IaC    | API Gateway 구성               | API Module                   |
-| 13 | 3주차 | 인증/보안  | Cognito 구성                   | User Pool / App Client       |
+| 10 | 2주차 | IaC    | Terraform DynamoDB 구성        | DynamoDB Module              |
+| 11 | 2주차 | IaC    | Terraform Lambda 구성          | Lambda Module                |
+| 12 | 2주차 | IaC    | API Gateway 구성               | API Module                   |
+| 13 | 2주차 | 인증/보안  | Cognito 구성                   | User Pool / App Client       |
 | 14 | 3주차 | 인증/보안  | JWT Authorizer 연결            | API 인증 구조                    |
-| 15 | 4주차 | 배포     | S3 + CloudFront 구성           | Frontend Hosting             |
-| 16 | 4주차 | 인증/보안  | IAM Role 분리                  | IAM Module                   |
-| 17 | 4주차 | 설정 관리  | SSM Parameter Store 적용       | Bedrock Model ID 관리          |
-| 18 | 4주차 | 보안     | KMS 적용                       | Lambda 환경변수 암호화              |
-| 19 | 4주차 | 보안     | WAF 적용                       | CloudFront WAF               |
-| 20 | 4주차 | 감사     | CloudTrail 구성                | Audit Trail                  |
-| 21 | 4주차 | 비용 관리  | AWS Budgets 구성               | 비용 알림                        |
-| 22 | 5주차 | 운영     | CloudWatch Alarm 구성          | 운영 알람                        |
-| 23 | 5주차 | 운영     | Grafana Cloud 연동 및 그래프 변동 확인 | CloudWatch Metrics Dashboard |
-| 24 | 5주차 | 자동화    | GitHub Actions CI 구성         | serverless-ci.yml            |
-| 25 | 5주차 | 자동화    | GitHub Actions Deploy 구성     | serverless-deploy.yml        |
-| 26 | 5주차 | 보안 자동화 | Trivy 보안 스캔 추가               | Security Scan                |
-| 27 | 6주차 | 문서화    | 설계서 작성                       | serverless-design.md         |
-| 28 | 6주차 | 문서화    | Runbook 작성                   | runbook.md                   |
-| 29 | 6주차 | 문서화    | 트러블슈팅 문서 작성                  | troubleshooting.md           |
-| 30 | 6주차 | 문서화    | 최종 README 정리                 | README.md                    |
+| 15 | 3주차 | 배포     | S3 + CloudFront 구성           | Frontend Hosting             |
+| 16 | 3주차 | 인증/보안  | IAM Role 분리                  | IAM Module                   |
+| 17 | 3주차 | 설정 관리  | SSM Parameter Store 적용       | Bedrock Model ID 관리          |
+| 19 | 3주차 | 보안     | WAF 적용                       | CloudFront WAF               |
+| 20 | 3주차 | 감사     | CloudTrail 구성                | Audit Trail                  |
+| 21 | 3주차 | 비용 관리  | AWS Budgets 구성               | 비용 알림                        |
+| 22 | 3주차 | 운영     | CloudWatch Alarm 구성          | 운영 알람                        |
+| 23 | 3주차 | 운영     | Grafana Cloud 연동 및 그래프 변동 확인 | CloudWatch Metrics Dashboard |
+| 24 | 4주차 | 자동화    | GitHub Actions CI 구성         | serverless-ci.yml            |
+| 25 | 4주차 | 자동화    | GitHub Actions Deploy 구성     | serverless-deploy.yml        |
+| 26 | 4주차 | 보안 자동화 | Trivy 보안 스캔 추가               | Security Scan                |
+| 27 | 4주차 | 문서화    | 설계서 작성                       | serverless-design.md         |
+| 28 | 4주차 | 문서화    | Runbook 작성                   | runbook.md                   |
+| 29 | 4주차 | 문서화    | 트러블슈팅 문서 작성                  | troubleshooting.md           |
+| 30 | 4주차 | 문서화    | 최종 README 정리                 | README.md                    |
 
 ---
 

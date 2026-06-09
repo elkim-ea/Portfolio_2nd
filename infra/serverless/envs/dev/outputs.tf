@@ -125,3 +125,7 @@ output "lambda_function_names" {
 output "lambda_function_arns" {
   value = module.lambda.lambda_function_arns
 }
+
+output "github_actions_deploy_role_arn" {
+  value = module.github_oidc.github_actions_deploy_role_arn
+}
