@@ -129,3 +129,7 @@ output "lambda_function_arns" {
 output "github_actions_deploy_role_arn" {
   value = module.github_oidc.github_actions_deploy_role_arn
 }
+
+output "sns_alert_topic_arn" {
+  value = module.monitoring.sns_alert_topic_arn
+}

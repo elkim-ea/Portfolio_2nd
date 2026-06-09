@@ -233,6 +233,7 @@ module "monitoring" {
 
   lambda_function_names = module.lambda.lambda_function_names
   api_gateway_id        = module.api_gateway.api_id
+  alert_email           = var.budget_notification_email
 
   tags = local.common_tags
 }

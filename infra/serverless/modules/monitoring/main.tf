@@ -16,6 +16,10 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
     FunctionName = each.value
   }
 
+  alarm_actions = [
+    aws_sns_topic.alerts.arn
+  ]
+
   tags = var.tags
 }
 
@@ -56,5 +60,21 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_5xx" {
     ApiId = var.api_gateway_id
   }
 
+  alarm_actions = [
+    aws_sns_topic.alerts.arn
+  ]
+  
   tags = var.tags
+}
+
+resource "aws_sns_topic" "alerts" {
+  name = "${var.project_name}-${var.environment}-alerts"
+
+  tags = var.tags
+}
+
+resource "aws_sns_topic_subscription" "email" {
+  topic_arn = aws_sns_topic.alerts.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
 }

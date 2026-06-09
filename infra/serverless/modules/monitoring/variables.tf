@@ -22,3 +22,8 @@ variable "tags" {
   description = "Common tags"
   type        = map(string)
 }
+
+variable "alert_email" {
+  description = "Email address for SNS alert subscription"
+  type        = string
+}

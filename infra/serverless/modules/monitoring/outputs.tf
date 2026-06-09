@@ -13,3 +13,7 @@ output "lambda_duration_alarm_names" {
 output "api_gateway_5xx_alarm_name" {
   value = aws_cloudwatch_metric_alarm.api_gateway_5xx.alarm_name
 }
+
+output "sns_alert_topic_arn" {
+  value = aws_sns_topic.alerts.arn
+}
