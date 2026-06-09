@@ -80,6 +80,7 @@ resource "aws_iam_policy" "github_actions_deploy_policy" {
           "wafv2:*",
           "kms:*",
           "iam:GetRole",
+          "iam:GetRolePolicy",
           "iam:CreateRole",
           "iam:UpdateRole",
           "iam:DeleteRole",
