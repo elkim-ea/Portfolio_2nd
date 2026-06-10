@@ -18,8 +18,8 @@
     "invoke:usage": "tsx scripts/invoke-usage.ts",
     "package:lambda": "npm run build && node scripts/package-lambda.mjs",
     "dev:server": "tsx src/server/index.ts",
-    "build:server": "esbuild src/server/index.ts --bundle --platform=node --target=node20 --outdir=dist-server",
-    "start:server": "node dist-server/index.js"
+    "build:server": "esbuild src/server/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist-server/index.cjs",
+    "start:server": "node dist-server/index.cjs"
   },
   "keywords": [],
   "author": "",
