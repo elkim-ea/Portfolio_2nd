@@ -39,8 +39,8 @@ export default function Sidebar() {
   return (
     <aside className="sticky top-16 flex h-[calc(100vh-4rem)] w-64 shrink-0 flex-col bg-slate-950 px-5 py-6 text-white">
       <div className="text-center">
-        <h2 className="text-2xl font-bold">KoreanMate</h2>
-        <p className="mt-2 text-sm text-slate-400">AI Korean Tutor</p>
+        <h1 className="text-2xl font-bold tracking-tight">KoreanMate</h1>
+        <p className="mt-1 text-sm text-slate-400">AI Korean Tutor</p>
       </div>
 
       <nav className="mt-10 space-y-4">
@@ -49,7 +49,7 @@ export default function Sidebar() {
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center justify-center rounded-2xl px-4 py-4 text-base font-medium transition ${
+              `flex items-center justify-center rounded-2xl px-5 py-4 text-lg font-bold transition ${
                 isActive
                   ? "bg-blue-600 text-white"
                   : "text-slate-300 hover:bg-slate-800 hover:text-white"
@@ -68,16 +68,20 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="mt-auto border-t border-slate-700 pt-6 text-center">
-        <div className="rounded-2xl bg-slate-900 p-4">
-          <p className="text-sm font-medium text-slate-400">Current Level</p>
+      <div className="mt-auto border-t border-slate-800 pt-5">
+        <div className="rounded-2xl bg-slate-900 p-4 text-center">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+            Current Level
+          </p>
           <p className="mt-1 text-base font-bold text-white">
             {profile?.levelLabel ?? "Not tested yet"}
           </p>
 
-          <div className="my-4 border-t border-slate-700" />
+          <div className="my-4 border-t border-slate-800" />
 
-          <p className="text-sm font-medium text-slate-400">Daily Usage</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+            Daily Usage
+          </p>
           <p className="mt-1 text-base font-bold text-white">
             {usage?.totalCount ?? 0} / {usage?.dailyLimit ?? 25} requests
           </p>
@@ -86,3 +90,4 @@ export default function Sidebar() {
     </aside>
   );
 }
+

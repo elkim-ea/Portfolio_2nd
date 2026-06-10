@@ -3,19 +3,19 @@ import { useNavigate } from "react-router";
 const actions = [
   {
     title: "Writing Correction",
-    description: "한국어 문장을 자연스럽게 교정합니다.",
+    description: "AI helps correct your Korean sentences naturally.",
     path: "/correction",
     badge: "Correction",
   },
   {
     title: "Conversation",
-    description: "상황별 한국어 회화를 생성합니다.",
+    description: "Generate Korean conversation practice for real-life situations.",
     path: "/conversation",
     badge: "Speaking",
   },
   {
     title: "Level Test",
-    description: "현재 한국어 레벨을 진단합니다.",
+    description: "Set your learning level automatically with a quick assessment.",
     path: "/level-test",
     badge: "Level",
   },
@@ -31,7 +31,7 @@ export default function QuickActions() {
           Quick Actions
         </h2>
         <p className="mt-2 text-sm text-slate-500">
-          자주 사용하는 학습 기능을 빠르게 시작하세요.
+          Quickly start your frequently used learning features.
         </p>
       </div>
 

@@ -1,6 +1,6 @@
 export type LearningRecordType = "correction" | "conversation" | "level-test";
 
-export type LearningLevel = "beginner" | "intermediate" | "advanced";
+export type LearningLevel = "a1" | "a2" | "b1" | "b2" | "c1" | "c2";
 
 export type LearningRecord = {
   userId: string;
@@ -10,6 +10,6 @@ export type LearningRecord = {
   outputText: string;
   outputData?: unknown;
   topic?: string | null;
-  level?: LearningLevel | null;
+  level?: string | null;
   createdAt: string;
 };

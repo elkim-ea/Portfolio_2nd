@@ -8,6 +8,7 @@ import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import type { CorrectionApiResponse } from "../types/aiResult";
 import { requestCorrection } from "../api/correctionApi";
+import { LEARNING_LEVEL_OPTIONS } from "../constants/learningLevels";
 
 const getExplanationTitle = (language: ExplanationLanguage) => {
   if (language === "ko") {
@@ -24,7 +25,7 @@ const getExplanationTitle = (language: ExplanationLanguage) => {
 export default function CorrectionPage() {
   const [inputText, setInputText] = useState("");
   const [selectedLevel, setSelectedLevel] =
-    useState<LearningLevel>("beginner");
+    useState<LearningLevel>("a2");
   const [explanationLanguage, setExplanationLanguage] =
     useState<ExplanationLanguage>("en");
 
@@ -85,35 +86,39 @@ export default function CorrectionPage() {
               value={inputText}
               onChange={(event) => setInputText(event.target.value)}
             />
-
             <div className="grid gap-3 md:grid-cols-2">
-              <select
-                value={selectedLevel}
-                onChange={(event) =>
-                  setSelectedLevel(event.target.value as LearningLevel)
-                }
-                className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
-              >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
+              <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+                Level
+                <select
+                  value={selectedLevel}
+                  onChange={(event) =>
+                    setSelectedLevel(event.target.value as LearningLevel)
+                  }
+                  className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
+                >
+                  {LEARNING_LEVEL_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-              {/* <select
-                value={explanationLanguage}
-                onChange={(event) =>
-                  setExplanationLanguage(
-                    event.target.value as ExplanationLanguage,
-                  )
-                }
-                className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
-              >
-                <option value="both">Korean + English</option>
-                <option value="ko">Korean only</option>
-                <option value="en">English only</option>
-              </select> */}
+              <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+                Explanation Language
+                <select
+                  value={explanationLanguage}
+                  onChange={(event) =>
+                    setExplanationLanguage(event.target.value as ExplanationLanguage)
+                  }
+                  className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
+                >
+                  <option value="both">Korean + English</option>
+                  <option value="ko">Korean only</option>
+                  <option value="en">English only</option>
+                </select>
+              </label>
             </div>
-
             <Button
               onClick={handleSubmit}
               disabled={!inputText.trim() || isLoading}

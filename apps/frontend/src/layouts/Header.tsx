@@ -29,9 +29,7 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await signOut({ global: true });
-
       localStorage.removeItem("koreanmate_user_email");
-
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Failed to logout:", error);
@@ -41,21 +39,25 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-8">
-      <Link to="/dashboard" className="text-lg font-bold text-slate-950">
+      <Link
+        to="/dashboard"
+        className="flex items-center text-2xl font-extrabold tracking-tight text-slate-950"
+      >
         KoreanMate
       </Link>
 
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-          <span>Free Plan</span>
-          <span className="text-slate-300">|</span>
-          <span>{email}</span>
+        <div className="hidden items-center gap-2 text-sm font-medium text-slate-600 md:flex">
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
+            Free Plan
+          </span>
+          <span className="max-w-64 truncate text-slate-600">{email}</span>
         </div>
 
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700"
+          className="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
         >
           Logout
         </button>

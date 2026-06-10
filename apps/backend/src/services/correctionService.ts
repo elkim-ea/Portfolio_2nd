@@ -11,9 +11,10 @@ import type {
 } from "../types/aiResult.js";
 import { parseAiJson } from "../utils/parseAiJson.js";
 import type {
-  UserLevel,
   ExplanationLanguage,
+  UserLevel,
 } from "../types/userProfile.js";
+import { getLevelInstruction } from "../utils/learningLevels.js";
 
 export type CorrectionInput = {
   text?: string;
@@ -27,41 +28,78 @@ export type CorrectionServiceResult = AiResponse<
   CorrectionResultData
 >;
 
-function buildCorrectionPrompt(
-  inputText: string,
-  level: UserLevel,
-  explanationLanguage: ExplanationLanguage,
-) {
-  const levelRule =
-    level === "beginner"
-      ? "Use very simple explanations. Focus on basic particles, word order, and natural beginner-level Korean."
-      : level === "intermediate"
-        ? "Use intermediate-level grammar explanations. Include nuance and natural expression improvements."
-        : "Use advanced explanations. Focus on nuance, register, style, and native-like Korean.";
+function getLevelRule(level: UserLevel): string {
+  switch (level) {
+    case "a1":
+      return "Use very simple explanations. Focus on basic particles, word order, and natural beginner-level Korean.";
 
-  const languageRule =
-    explanationLanguage === "ko"
-      ? `
+    case "a2":
+      return "Use elementary-level grammar explanations. Include basic sentence structures and common expressions.";
+
+    case "b1":
+      return "Use intermediate-level grammar explanations. Include nuance and natural expression improvements.";
+
+    case "b2":
+      return "Use upper-intermediate explanations. Focus on sentence variety, natural phrasing, and context-appropriate expressions.";
+
+    case "c1":
+      return "Use advanced explanations. Focus on nuance, register, style, and native-like Korean.";
+
+    case "c2":
+      return "Use proficient-level explanations. Focus on subtle nuance, idiomatic usage, tone control, and highly natural Korean.";
+
+    default:
+      return "Use very simple explanations. Focus on basic particles, word order, and natural beginner-level Korean.";
+  }
+}
+
+function getExplanationLanguageRule(
+  explanationLanguage: ExplanationLanguage,
+): string {
+  switch (explanationLanguage) {
+    case "ko":
+      return `
 Write explanationEnglish and grammarPoints in Korean only.
 Do not write English explanations.
 Keep the JSON key names unchanged even though the values are Korean.
 naturalEnglishMeaning may be written in Korean as a meaning explanation.
-`.trim()
-      : explanationLanguage === "en"
-        ? `
+`.trim();
+
+    case "en":
+      return `
 Write explanationEnglish, grammarPoints, and naturalEnglishMeaning in English only.
 Do not write Korean explanations in explanationEnglish.
 Only correctedKorean may contain Korean.
 If you mention Korean grammar examples, keep them short and explain them in English.
-`.trim()
-        : `
+`.trim();
+
+    case "both":
+      return `
 Write explanationEnglish and grammarPoints with both Korean and English where useful.
 correctedKorean must be Korean.
 naturalEnglishMeaning must include a clear English meaning.
 `.trim();
 
+    default:
+      return `
+Write explanationEnglish and grammarPoints with both Korean and English where useful.
+correctedKorean must be Korean.
+naturalEnglishMeaning must include a clear English meaning.
+`.trim();
+  }
+}
+
+function buildCorrectionPrompt(
+  inputText: string,
+  level: UserLevel,
+  explanationLanguage: ExplanationLanguage,
+): string {
+  const levelInstruction = getLevelInstruction(level);
+  const levelRule = getLevelRule(level);
+  const languageRule = getExplanationLanguageRule(explanationLanguage);
+
   return `
-User Korean level: ${level}
+User Korean level: ${levelInstruction}
 Explanation language: ${explanationLanguage}
 
 Level rule:
@@ -120,7 +158,7 @@ export const correctKoreanText = async (
   input: CorrectionInput,
 ): Promise<CorrectionServiceResult> => {
   const userId = input.userId;
-  const inputText = input.text ?? "";
+  const inputText = input.text?.trim() ?? "";
 
   const profile = await getOrCreateUserProfile(userId);
 

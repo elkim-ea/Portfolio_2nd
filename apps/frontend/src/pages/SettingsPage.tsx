@@ -5,24 +5,14 @@ import PageHeader from "../components/common/PageHeader";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import { getProfile, updateProfile } from "../api/profileApi";
-import type { LearningLevel } from "../types/learningRecord";
-import type {
-  ConversationTone,
-  ExplanationLanguage,
-  LearningGoal,
-} from "../types/userProfile";
+import type { LearningGoal } from "../types/userProfile";
+import { getLearningLevelLabel } from "../constants/learningLevels";
 
 export default function SettingsPage() {
   const [email, setEmail] = useState("Signed in");
   const [userId, setUserId] = useState("Unknown");
 
-  const [currentLevel, setCurrentLevel] =
-    useState<LearningLevel>("beginner");
-  const [levelLabel, setLevelLabel] = useState("Beginner A2");
-  const [explanationLanguage, setExplanationLanguage] =
-    useState<ExplanationLanguage>("both");
-  const [conversationTone, setConversationTone] =
-    useState<ConversationTone>("polite");
+  const [currentLevelLabel, setCurrentLevelLabel] = useState("A1 Beginner");
   const [learningGoal, setLearningGoal] = useState<LearningGoal>("daily");
 
   const [isLoading, setIsLoading] = useState(true);
@@ -46,10 +36,10 @@ export default function SettingsPage() {
 
         const data = await getProfile();
 
-        setCurrentLevel(data.profile.currentLevel);
-        setLevelLabel(data.profile.levelLabel);
-        setExplanationLanguage(data.profile.explanationLanguage);
-        setConversationTone(data.profile.conversationTone);
+        setCurrentLevelLabel(
+          data.profile.levelLabel ??
+            getLearningLevelLabel(data.profile.currentLevel),
+        );
         setLearningGoal(data.profile.learningGoal ?? "daily");
       } catch (error) {
         console.error("Failed to load profile:", error);
@@ -68,17 +58,13 @@ export default function SettingsPage() {
       setMessage("");
 
       const data = await updateProfile({
-        currentLevel,
-        levelLabel,
-        explanationLanguage,
-        conversationTone,
         learningGoal,
       });
 
-      setCurrentLevel(data.profile.currentLevel);
-      setLevelLabel(data.profile.levelLabel);
-      setExplanationLanguage(data.profile.explanationLanguage);
-      setConversationTone(data.profile.conversationTone);
+      setCurrentLevelLabel(
+        data.profile.levelLabel ??
+          getLearningLevelLabel(data.profile.currentLevel),
+      );
       setLearningGoal(data.profile.learningGoal ?? "daily");
 
       setMessage("Settings saved successfully.");
@@ -153,71 +139,22 @@ export default function SettingsPage() {
             </div>
           ) : (
             <>
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold text-slate-700">
+              <div className="mt-5 space-y-5">
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-slate-700">
                     Current Level
-                  </span>
-                  <select
-                    value={currentLevel}
-                    onChange={(event) =>
-                      setCurrentLevel(event.target.value as LearningLevel)
-                    }
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm"
-                  >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                  </select>
-                </label>
+                  </p>
 
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold text-slate-700">
-                    Level Label
-                  </span>
-                  <input
-                    value={levelLabel}
-                    onChange={(event) => setLevelLabel(event.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm"
-                  />
-                </label>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-slate-800">
+                    {currentLevelLabel}
+                  </div>
 
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold text-slate-700">
-                    Explanation Language
-                  </span>
-                  <select
-                    value={explanationLanguage}
-                    onChange={(event) =>
-                      setExplanationLanguage(
-                        event.target.value as ExplanationLanguage,
-                      )
-                    }
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm"
-                  >
-                    <option value="ko">Korean</option>
-                    <option value="en">English</option>
-                    <option value="both">Both</option>
-                  </select>
-                </label>
+                  <p className="text-xs text-slate-500">
+                    Current Level is updated only through the Level Test result.
+                  </p>
+                </div>
 
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold text-slate-700">
-                    Conversation Tone
-                  </span>
-                  <select
-                    value={conversationTone}
-                    onChange={(event) =>
-                      setConversationTone(event.target.value as ConversationTone)
-                    }
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm"
-                  >
-                    <option value="polite">Polite</option>
-                    <option value="casual">Casual</option>
-                  </select>
-                </label>
-
-                <label className="space-y-2 md:col-span-2">
+                <label className="block space-y-2">
                   <span className="text-sm font-semibold text-slate-700">
                     Learning Goal
                   </span>
@@ -253,3 +190,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

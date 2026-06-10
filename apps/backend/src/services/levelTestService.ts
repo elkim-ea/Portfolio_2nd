@@ -39,21 +39,30 @@ Do not include any text outside JSON.
 
 JSON schema:
 {
-  "estimatedLevel": "beginner",
-  "levelLabel": "Beginner A2",
+  "estimatedLevel": "a1",
+  "levelLabel": "A1 Beginner",
   "explanationEnglish": "string",
   "weaknesses": ["string"],
   "nextActions": ["string"]
 }
 
 Allowed estimatedLevel values:
-- beginner
-- intermediate
-- advanced
+- a1
+- a2
+- b1
+- b2
+- c1
+- c2
 
 Rules:
-- estimatedLevel must be one of: beginner, intermediate, advanced.
-- levelLabel should be like Beginner A1, Beginner A2, Intermediate B1, Intermediate B2, Advanced C1.
+- estimatedLevel must be one of: a1, a2, b1, b2, c1, c2.
+- levelLabel must be one of:
+  - A1 Beginner
+  - A2 Elementary
+  - B1 Intermediate
+  - B2 Upper Intermediate
+  - C1 Advanced
+  - C2 Proficient
 - weaknesses must contain 2 to 5 items.
 - nextActions must contain 2 to 5 items.
 

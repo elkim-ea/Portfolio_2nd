@@ -7,21 +7,9 @@ import Badge from "../components/common/Badge";
 import type { LevelTestApiResponse } from "../types/aiResult";
 import { requestLevelTest } from "../api/levelTestApi";
 import { updateProfile } from "../api/profileApi";
-import type { LearningLevel } from "../types/learningRecord";
+import { normalizeLearningLevel } from "../constants/learningLevels";
 
-const normalizeLevel = (level: string): LearningLevel => {
-  const lowerLevel = level.toLowerCase();
 
-  if (lowerLevel.includes("advanced")) {
-    return "advanced";
-  }
-
-  if (lowerLevel.includes("intermediate")) {
-    return "intermediate";
-  }
-
-  return "beginner";
-};
 
 export default function LevelTestPage() {
   const [answer, setAnswer] = useState("");
@@ -70,7 +58,7 @@ export default function LevelTestPage() {
       setIsApplying(true);
       setApplyMessage("");
 
-      const currentLevel = normalizeLevel(result.result.levelLabel);
+      const currentLevel = normalizeLearningLevel(result.result.levelLabel);
 
       await updateProfile({
         currentLevel,

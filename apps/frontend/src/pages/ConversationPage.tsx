@@ -7,11 +7,12 @@ import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import type { ConversationApiResponse } from "../types/aiResult";
 import { requestConversation } from "../api/conversationApi";
+import { LEARNING_LEVEL_OPTIONS } from "../constants/learningLevels";
 
 export default function ConversationPage() {
   const [topic, setTopic] = useState("ordering food at a restaurant");
   const [selectedLevel, setSelectedLevel] =
-    useState<LearningLevel>("beginner");
+    useState<LearningLevel>("a2");
   const [tone, setTone] = useState<ConversationTone>("polite");
 
   const [result, setResult] = useState<ConversationApiResponse | null>(null);
@@ -134,28 +135,39 @@ export default function ConversationPage() {
             />
 
             <div className="grid gap-3 md:grid-cols-2">
-              <select
-                value={selectedLevel}
-                onChange={(event) =>
-                  setSelectedLevel(event.target.value as LearningLevel)
-                }
-                className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
-              >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
+              <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+                Level
+                <select
+                  value={selectedLevel}
+                  onChange={(event) =>
+                    setSelectedLevel(event.target.value as LearningLevel)
+                  }
+                  className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
+                >
+                  {LEARNING_LEVEL_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-              <select
-                value={tone}
-                onChange={(event) =>
-                  setTone(event.target.value as ConversationTone)
-                }
-                className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
-              >
-                <option value="polite">Polite</option>
-                <option value="casual">Casual</option>
-              </select>
+              <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+                Conversation Tone
+                <select
+                  value={tone}
+                  onChange={(event) =>
+                    setTone(event.target.value as ConversationTone)
+                  }
+                  className="rounded-xl border border-slate-200 bg-white p-3 text-sm"
+                >
+                  <option value="polite">Polite</option>
+                  <option value="casual">Casual</option>
+                </select>
+                 <span className="text-xs font-normal text-slate-500">
+                    Choose how formal the generated Korean conversation should be.
+                </span>
+              </label>
             </div>
 
             <Button

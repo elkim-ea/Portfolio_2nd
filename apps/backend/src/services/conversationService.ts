@@ -11,10 +11,11 @@ import type {
 } from "../types/aiResult.js";
 import { parseAiJson } from "../utils/parseAiJson.js";
 import type {
-  UserLevel,
   ConversationTone,
   ExplanationLanguage,
+  UserLevel,
 } from "../types/userProfile.js";
+import { getLevelInstruction } from "../utils/learningLevels.js";
 
 export type ConversationInput = {
   userId: string;
@@ -28,28 +29,42 @@ export type ConversationServiceResult = AiResponse<
   ConversationResultData
 >;
 
-function buildConversationPrompt(
-  topic: string,
-  level: UserLevel,
-  conversationTone: ConversationTone,
-  explanationLanguage: ExplanationLanguage,
-) {
-  const levelRule =
-    level === "beginner"
-      ? "Use short and simple Korean sentences. Avoid difficult grammar. Each Korean line should be easy for beginners."
-      : level === "intermediate"
-        ? "Use practical intermediate Korean with common grammar patterns and natural expressions."
-        : "Use more natural and advanced Korean expressions, including nuance and realistic phrasing.";
+function getLevelRule(level: UserLevel): string {
+  switch (level) {
+    case "a1":
+      return "Use very short and simple Korean sentences. Avoid difficult grammar. Each Korean line should be easy for complete beginners.";
 
-  const toneRule =
-    conversationTone === "polite"
-      ? `
+    case "a2":
+      return "Use elementary Korean with simple sentence patterns, common verbs, and practical everyday expressions.";
+
+    case "b1":
+      return "Use practical intermediate Korean with common grammar patterns, natural expressions, and slightly longer sentences.";
+
+    case "b2":
+      return "Use upper-intermediate Korean with more natural phrasing, sentence variety, and realistic conversation flow.";
+
+    case "c1":
+      return "Use advanced Korean expressions with nuance, register awareness, and natural native-like phrasing.";
+
+    case "c2":
+      return "Use highly natural and fluent Korean with subtle nuance, idiomatic expressions, and realistic native-level conversation flow.";
+
+    default:
+      return "Use very short and simple Korean sentences. Avoid difficult grammar. Each Korean line should be easy for complete beginners.";
+  }
+}
+
+function getToneRule(conversationTone: ConversationTone): string {
+  if (conversationTone === "polite") {
+    return `
 Use polite Korean speech style only.
 Use polite endings such as -요, -습니다, -습니까 where natural.
 Do not use casual 반말 endings such as -아/-어, -야, -지, -네.
 The dialogue may be used with strangers, teachers, staff, or formal situations.
-`.trim()
-      : `
+`.trim();
+  }
+
+  return `
 Use casual Korean speech style only.
 Use 반말 endings such as -아/-어, -야, -지, -네.
 Do not use polite endings or honorific expressions.
@@ -59,24 +74,44 @@ If the topic normally requires politeness, reinterpret it as a casual roleplay b
 Every Korean sentence in "lines" and "usefulExpressions" must be casual 반말.
 If any Korean sentence contains polite speech, rewrite it into casual Korean before returning JSON.
 `.trim();
+}
 
-  const explanationRule =
-    explanationLanguage === "ko"
-      ? `
+function getExplanationRule(
+  explanationLanguage: ExplanationLanguage,
+): string {
+  if (explanationLanguage === "ko") {
+    return `
 Write englishMeaning and explanationEnglish values in Korean only, except romanization.
+Write grammarTipEnglish in Korean only even though the key name is grammarTipEnglish.
 Keep JSON key names unchanged.
-`.trim()
-      : explanationLanguage === "en"
-        ? `
+`.trim();
+  }
+
+  if (explanationLanguage === "en") {
+    return `
 Write englishMeaning, explanationEnglish, and grammarTipEnglish in English only.
 Only Korean dialogue fields may contain Korean.
-`.trim()
-        : `
-Use English as the main explanation language, and include Korean support only where useful.
 `.trim();
+  }
 
   return `
-User Korean level: ${level}
+Use English as the main explanation language, and include Korean support only where useful.
+`.trim();
+}
+
+function buildConversationPrompt(
+  topic: string,
+  level: UserLevel,
+  conversationTone: ConversationTone,
+  explanationLanguage: ExplanationLanguage,
+): string {
+  const levelInstruction = getLevelInstruction(level);
+  const levelRule = getLevelRule(level);
+  const toneRule = getToneRule(conversationTone);
+  const explanationRule = getExplanationRule(explanationLanguage);
+
+  return `
+User Korean level: ${levelInstruction}
 Conversation tone: ${conversationTone}
 Explanation language: ${explanationLanguage}
 
@@ -140,7 +175,7 @@ Rules:
 - If tone is casual, the topic must be treated as a conversation between close friends.
 - Do not ignore the selected tone.
 - Do not ignore the selected explanation language.
-  `.trim();
+`.trim();
 }
 
 function formatConversationOutput(result: ConversationResultData): string {
@@ -173,7 +208,7 @@ export const generateConversation = async (
   input: ConversationInput,
 ): Promise<ConversationServiceResult> => {
   const userId = input.userId;
-  const topic = input.topic ?? "ordering food at a restaurant";
+  const topic = input.topic?.trim() || "ordering food at a restaurant";
 
   const profile = await getOrCreateUserProfile(userId);
 
@@ -226,3 +261,4 @@ export const generateConversation = async (
     level: selectedLevel,
   };
 };
+

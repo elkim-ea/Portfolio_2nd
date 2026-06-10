@@ -5,7 +5,7 @@ import type {
 
 export type LearningRecordType = "correction" | "conversation" | "level-test";
 
-export type LearningLevel = "beginner" | "intermediate" | "advanced";
+export type UserLevel = "a1" | "a2" | "b1" | "b2" | "c1" | "c2";
 
 export type LearningRecord = {
   userId: string;
@@ -15,7 +15,7 @@ export type LearningRecord = {
   outputText: string;
   outputData?: unknown;
   topic?: string | null;
-  level?: LearningLevel | string | null;
+  level?: UserLevel | string | null;
   explanationLanguage?: ExplanationLanguage | null;
   conversationTone?: ConversationTone | null;
   createdAt: string;
