@@ -99,7 +99,7 @@ export default function CorrectionPage() {
                 <option value="advanced">Advanced</option>
               </select>
 
-              <select
+              {/* <select
                 value={explanationLanguage}
                 onChange={(event) =>
                   setExplanationLanguage(
@@ -111,7 +111,7 @@ export default function CorrectionPage() {
                 <option value="both">Korean + English</option>
                 <option value="ko">Korean only</option>
                 <option value="en">English only</option>
-              </select>
+              </select> */}
             </div>
 
             <Button

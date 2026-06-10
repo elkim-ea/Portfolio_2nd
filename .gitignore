@@ -19,3 +19,9 @@ node_modules/
 
 # 대본
 docs/serverless/presentation-script.*
+
+# ko
+docs/serverless/project-plan.ko.*
+docs/serverless/serverless-design.ko.*
+docs/serverless/runbook.ko.*
+docs/serverless/troubleshooting.ko.*
