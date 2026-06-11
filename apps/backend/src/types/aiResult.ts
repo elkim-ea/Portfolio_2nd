@@ -27,9 +27,12 @@ export type ConversationResultData = {
 };
 
 export type LevelTestEstimatedLevel =
-  | "beginner"
-  | "intermediate"
-  | "advanced";
+  | "a1"
+  | "a2"
+  | "b1"
+  | "b2"
+  | "c1"
+  | "c2";
 
 export type LevelTestResultData = {
   estimatedLevel: LevelTestEstimatedLevel;
@@ -39,29 +42,31 @@ export type LevelTestResultData = {
   nextActions: string[];
 };
 
-export type CorrectionApiResponse = {
-  type: "correction";
+export type AiResponse<
+  TType extends "correction" | "conversation" | "level-test",
+  TResult,
+> = {
+  type: TType;
   inputText: string;
-  result: CorrectionResultData;
+  result: TResult;
   outputText: string;
   level: string;
 };
 
-export type ConversationApiResponse = {
-  type: "conversation";
-  inputText: string;
-  result: ConversationResultData;
-  outputText: string;
-  level: string;
-};
+export type CorrectionApiResponse = AiResponse<
+  "correction",
+  CorrectionResultData
+>;
 
-export type LevelTestApiResponse = {
-  type: "level-test";
-  inputText: string;
-  result: LevelTestResultData;
-  outputText: string;
-  level: string;
-};
+export type ConversationApiResponse = AiResponse<
+  "conversation",
+  ConversationResultData
+>;
+
+export type LevelTestApiResponse = AiResponse<
+  "level-test",
+  LevelTestResultData
+>;
 
 export type KoreanMateApiResponse =
   | CorrectionApiResponse
