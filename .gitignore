@@ -19,6 +19,7 @@ node_modules/
 
 # 대본
 docs/serverless/presentation-script.*
+docs/serverless/later-plan.*
 
 # ko
 docs/serverless/project-plan.ko.*
