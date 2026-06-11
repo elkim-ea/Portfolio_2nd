@@ -1,0 +1,56 @@
+name: EKS Backend Image Build
+
+on:
+  push:
+    branches:
+      - eks
+    paths:
+      - "apps/backend/**"
+      - "deploy/docker/backend.Dockerfile"
+      - ".github/workflows/eks-image-build.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ECR_REPOSITORY: koreanmate-dev-backend
+  IMAGE_TAG: dev
+
+jobs:
+  build-and-push:
+    name: Build and push backend image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build backend Docker image
+        run: |
+          docker build \
+            -f deploy/docker/backend.Dockerfile \
+            -t $ECR_REPOSITORY:$IMAGE_TAG \
+            .
+
+      - name: Tag backend Docker image
+        run: |
+          docker tag \
+            $ECR_REPOSITORY:$IMAGE_TAG \
+            ${{ steps.ecr-login.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Push backend Docker image to ECR
+        run: |
+          docker push \
+            ${{ steps.ecr-login.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG

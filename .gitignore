@@ -3,6 +3,8 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
+crash.log
+crash.*.log
 
 # Env
 .env
