@@ -26,8 +26,13 @@ export type ConversationResultData = {
   grammarTipEnglish: string;
 };
 
+export type LevelTestEstimatedLevel =
+  | "beginner"
+  | "intermediate"
+  | "advanced";
+
 export type LevelTestResultData = {
-  estimatedLevel: "beginner" | "intermediate" | "advanced";
+  estimatedLevel: LevelTestEstimatedLevel;
   levelLabel: string;
   explanationEnglish: string;
   weaknesses: string[];
@@ -57,3 +62,8 @@ export type LevelTestApiResponse = {
   outputText: string;
   level: string;
 };
+
+export type KoreanMateApiResponse =
+  | CorrectionApiResponse
+  | ConversationApiResponse
+  | LevelTestApiResponse;

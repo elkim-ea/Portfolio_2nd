@@ -26,22 +26,44 @@ export type ConversationResultData = {
   grammarTipEnglish: string;
 };
 
+export type LevelTestEstimatedLevel =
+  | "beginner"
+  | "intermediate"
+  | "advanced";
+
 export type LevelTestResultData = {
-  estimatedLevel: LearningLevel;
+  estimatedLevel: LevelTestEstimatedLevel;
   levelLabel: string;
   explanationEnglish: string;
   weaknesses: string[];
   nextActions: string[];
 };
 
-export type AiResponse<
-  TType extends "correction" | "conversation" | "level-test",
-  TResult,
-> = {
-  type: TType;
+export type CorrectionApiResponse = {
+  type: "correction";
   inputText: string;
-  result: TResult;
+  result: CorrectionResultData;
   outputText: string;
-  level?: string;
-  savedRecordId?: string;
+  level: string;
 };
+
+export type ConversationApiResponse = {
+  type: "conversation";
+  inputText: string;
+  result: ConversationResultData;
+  outputText: string;
+  level: string;
+};
+
+export type LevelTestApiResponse = {
+  type: "level-test";
+  inputText: string;
+  result: LevelTestResultData;
+  outputText: string;
+  level: string;
+};
+
+export type KoreanMateApiResponse =
+  | CorrectionApiResponse
+  | ConversationApiResponse
+  | LevelTestApiResponse;
