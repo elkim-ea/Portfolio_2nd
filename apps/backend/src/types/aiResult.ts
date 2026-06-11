@@ -1,5 +1,3 @@
-import type { LearningLevel } from "./learningRecord.js";
-
 export type CorrectionResultData = {
   correctedKorean: string;
   explanationEnglish: string;
