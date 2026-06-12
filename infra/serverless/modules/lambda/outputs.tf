@@ -36,8 +36,8 @@ output "level_test_invoke_arn" {
 
 output "lambda_function_names" {
   value = [
-     for function in aws_lambda_function.functions :
-     function.function_name
+    for function in aws_lambda_function.functions :
+    function.function_name
   ]
 }
 

@@ -37,11 +37,11 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                                        = "${local.name}-public-${tonumber(each.key) + 1}"
-    Project                                     = var.project_name
-    Environment                                 = var.environment
-    ManagedBy                                   = "Terraform"
-    "kubernetes.io/role/elb"                    = "1"
+    Name                                          = "${local.name}-public-${tonumber(each.key) + 1}"
+    Project                                       = var.project_name
+    Environment                                   = var.environment
+    ManagedBy                                     = "Terraform"
+    "kubernetes.io/role/elb"                      = "1"
     "kubernetes.io/cluster/${local.name}-cluster" = "shared"
   }
 }
@@ -56,12 +56,12 @@ resource "aws_subnet" "private" {
   availability_zone = var.availability_zones[tonumber(each.key)]
 
   tags = {
-    Name                                           = "${local.name}-private-${tonumber(each.key) + 1}"
-    Project                                        = var.project_name
-    Environment                                    = var.environment
-    ManagedBy                                      = "Terraform"
-    "kubernetes.io/role/internal-elb"              = "1"
-    "kubernetes.io/cluster/${local.name}-cluster"  = "shared"
+    Name                                          = "${local.name}-private-${tonumber(each.key) + 1}"
+    Project                                       = var.project_name
+    Environment                                   = var.environment
+    ManagedBy                                     = "Terraform"
+    "kubernetes.io/role/internal-elb"             = "1"
+    "kubernetes.io/cluster/${local.name}-cluster" = "shared"
   }
 }
 
