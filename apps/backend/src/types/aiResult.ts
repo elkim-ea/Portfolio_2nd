@@ -1,5 +1,3 @@
-import type { LearningLevel } from "./learningRecord.js";
-
 export type CorrectionResultData = {
   correctedKorean: string;
   explanationEnglish: string;
@@ -28,8 +26,16 @@ export type ConversationResultData = {
   grammarTipEnglish: string;
 };
 
+export type LevelTestEstimatedLevel =
+  | "a1"
+  | "a2"
+  | "b1"
+  | "b2"
+  | "c1"
+  | "c2";
+
 export type LevelTestResultData = {
-  estimatedLevel: LearningLevel;
+  estimatedLevel: LevelTestEstimatedLevel;
   levelLabel: string;
   explanationEnglish: string;
   weaknesses: string[];
@@ -44,6 +50,25 @@ export type AiResponse<
   inputText: string;
   result: TResult;
   outputText: string;
-  level?: string;
-  savedRecordId?: string;
+  level: string;
 };
+
+export type CorrectionApiResponse = AiResponse<
+  "correction",
+  CorrectionResultData
+>;
+
+export type ConversationApiResponse = AiResponse<
+  "conversation",
+  ConversationResultData
+>;
+
+export type LevelTestApiResponse = AiResponse<
+  "level-test",
+  LevelTestResultData
+>;
+
+export type KoreanMateApiResponse =
+  | CorrectionApiResponse
+  | ConversationApiResponse
+  | LevelTestApiResponse;

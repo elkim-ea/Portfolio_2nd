@@ -63,7 +63,7 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_5xx" {
   alarm_actions = [
     aws_sns_topic.alerts.arn
   ]
-  
+
   tags = var.tags
 }
 

@@ -16,7 +16,10 @@
     "invoke:level-test": "tsx scripts/invoke-level-test.ts",
     "invoke:history": "tsx scripts/invoke-history.ts",
     "invoke:usage": "tsx scripts/invoke-usage.ts",
-    "package:lambda": "npm run build && node scripts/package-lambda.mjs"
+    "package:lambda": "npm run build && node scripts/package-lambda.mjs",
+    "dev:server": "tsx src/server/index.ts",
+    "build:server": "esbuild src/server/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist-server/index.cjs",
+    "start:server": "node dist-server/index.cjs"
   },
   "keywords": [],
   "author": "",
@@ -25,11 +28,15 @@
     "@aws-sdk/client-bedrock-runtime": "^3.1056.0",
     "@aws-sdk/client-dynamodb": "^3.1053.0",
     "@aws-sdk/lib-dynamodb": "^3.1053.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.161",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",
     "adm-zip": "^0.5.17",
     "esbuild": "^0.28.0",

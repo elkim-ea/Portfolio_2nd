@@ -53,16 +53,16 @@ resource "aws_iam_role_policy" "grafana_cloudwatch_readonly" {
         Sid    = "AllowCloudWatchLogsRead"
         Effect = "Allow"
         Action = [
-            "logs:DescribeLogGroups",
-            "logs:DescribeLogStreams",
-            "logs:FilterLogEvents",
-            "logs:StartQuery",
-            "logs:StopQuery",
-            "logs:GetQueryResults",
-            "logs:GetLogEvents"
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:FilterLogEvents",
+          "logs:StartQuery",
+          "logs:StopQuery",
+          "logs:GetQueryResults",
+          "logs:GetLogEvents"
         ]
         Resource = "*"
-        }
+      }
     ]
   })
 }

@@ -6,7 +6,7 @@ import type {
   UserLevel,
 } from "../types/userProfile.js";
 
-const USER_LEVELS: UserLevel[] = ["beginner", "intermediate", "advanced"];
+const USER_LEVELS: UserLevel[] = ["a1", "a2", "b1", "b2", "c1", "c2"];
 const EXPLANATION_LANGUAGES: ExplanationLanguage[] = ["ko", "en", "both"];
 const CONVERSATION_TONES: ConversationTone[] = ["polite", "casual"];
 const LEARNING_GOALS: LearningGoal[] = ["daily", "travel", "business"];
