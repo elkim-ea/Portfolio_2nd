@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: koreanmate
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      serviceAccountName: backend
+      containers:
+        - name: backend
+          image: 127696278675.dkr.ecr.ap-northeast-2.amazonaws.com/koreanmate-dev-backend:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: AWS_REGION
+              value: "ap-northeast-2"
+            - name: BEDROCK_MODEL_ID
+              value: "anthropic.claude-3-haiku-20240307-v1:0"
+            - name: LEARNING_RECORDS_TABLE_NAME
+              value: "koreanmate-dev-learning-records"
+            - name: USAGE_LIMITS_TABLE_NAME
+              value: "koreanmate-dev-usage-limits"
+            - name: USER_PROFILES_TABLE_NAME
+              value: "koreanmate-dev-user-profiles"
+            - name: BEDROCK_MODEL_ID_PARAMETER_NAME
+              value: "/koreanmate/dev/bedrock/model-id"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 20
