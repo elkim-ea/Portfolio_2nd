@@ -169,14 +169,14 @@ docs/
 ├── overview.md
 ├── serverless/
 │   ├── project-plan.md
-│   ├── architecture.md
+│   ├── eks-design.md
 │   ├── runbook.md
 │   ├── troubleshooting.md
 │   └── evidence.md
 │
 └── eks/
     ├── project-plan.md
-    ├── architecture.md
+    ├── eks-design.md
     ├── runbook.md
     ├── troubleshooting.md
     └── evidence.md
@@ -193,7 +193,7 @@ docs/
 ## Serverless Version
 
 * [Serverless Project Plan](./docs/serverless/project-plan.md)
-* [Serverless Architecture](./docs/serverless/architecture.md)
+* [Serverless Architecture](./docs/serverless/serverless-design.md)
 * [Serverless Runbook](./docs/serverless/runbook.md)
 * [Serverless Troubleshooting](./docs/serverless/troubleshooting.md)
 * [Serverless Evidence](./docs/serverless/evidence.md)
@@ -201,7 +201,7 @@ docs/
 ## EKS Version
 
 * [EKS Project Plan](./docs/eks/project-plan.md)
-* [EKS Architecture](./docs/eks/architecture.md)
+* [EKS Architecture](./docs/eks/eks-design.md)
 * [EKS Runbook](./docs/eks/runbook.md)
 * [EKS Troubleshooting](./docs/eks/troubleshooting.md)
 * [EKS Evidence](./docs/eks/evidence.md)

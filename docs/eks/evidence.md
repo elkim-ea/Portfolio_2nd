@@ -1,6 +1,6 @@
 # KoreanMate EKS Evidence
 
-> 목적: KoreanMate EKS 버전에서 Kubernetes 기반 배포, GitHub Actions 이미지 빌드, ECR Push, ALB Ingress, IRSA, Argo CD GitOps, Prometheus/Grafana 관측성 구성이 실제로 동작했음을 증명하기 위한 캡처 정리 문서다.
+> 목적: KoreanMate EKS 버전에서 Kubernetes 기반 배포, GitHub Actions 이미지 빌드, ECR Push, ALB Ingress, IRSA, Argo CD GitOps, Prometheus/Grafana 관측성 구성이 실제로 동작했음을 증명하기 위한 문서다.
 > 기준 환경: AWS Seoul Region `ap-northeast-2`, EKS `dev` 환경, Terraform 기반 IaC
 
 ---
@@ -15,7 +15,7 @@ kubectl get nodes
 
 확인 결과, Worker Node가 `Ready` 상태로 표시되었다.
 
-<img src="./images/01-eks-nodes-ready.png" width="800">
+<img src="./images/evidence/eks-nodegroup-scaled-to-3.png" width="800">
 
 ---
 
@@ -32,7 +32,7 @@ aws ecr describe-images \
 
 확인 결과, `koreanmate-dev-backend:dev` 이미지가 ECR에 정상적으로 업로드되었고 image digest가 생성되었다.
 
-<img src="./images/02-ecr-image-push-success.png" width="800">
+<img src="./images/evidence/02-ecr-image-push-success.png" width="800">
 
 ---
 
@@ -48,7 +48,7 @@ EKS Backend Image Build
 
 확인 결과, 전체 checks가 통과했고 Backend image build 및 push job이 성공했다.
 
-<img src="./images/03-github-actions-eks-image-build-success.png" width="800">
+<img src="./images/evidence/03-github-actions-eks-image-build-success.png" width="800">
 
 ---
 
@@ -64,7 +64,7 @@ koreanmate-dev-backend:dev
 
 스캔 결과는 GitHub Actions 로그에 남으며, HIGH/CRITICAL 취약점 확인 및 이미지 보안 검증 근거로 사용한다.
 
-<img src="./images/04-trivy-scan-result.png" width="800">
+<img src="./images/evidence/04-trivy-scan-result.png" width="800">
 
 ---
 
@@ -78,7 +78,7 @@ kubectl get pods -n kube-system | grep aws-load-balancer-controller
 
 확인 결과, AWS Load Balancer Controller Pod 2개가 모두 `Running` 상태였다.
 
-<img src="./images/05-alb-controller-running.png" width="800">
+<img src="./images/evidence/05-alb-controller-running.png" width="800">
 
 ---
 
@@ -96,7 +96,7 @@ kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
 eks.amazonaws.com/role-arn: arn:aws:iam::127696278675:role/koreanmate-dev-eks-cluster-aws-load-balancer-controller-role
 ```
 
-<img src="./images/06-alb-controller-irsa.png" width="800">
+<img src="./images/evidence/06-alb-controller-irsa.png" width="800">
 
 ---
 
@@ -115,7 +115,7 @@ aws iam get-role \
 system:serviceaccount:koreanmate:backend
 ```
 
-<img src="./images/07-backend-pod-irsa-role.png" width="800">
+<img src="./images/evidence/07-backend-pod-irsa-role.png" width="800">
 
 ---
 
@@ -129,7 +129,7 @@ kubectl get pods -n koreanmate
 
 확인 결과, Backend Pod가 `Running` 상태로 실행되었다.
 
-<img src="./images/08-backend-pod-running.png" width="800">
+<img src="./images/evidence/08-backend-pod-running.png" width="800">
 
 ---
 
@@ -147,11 +147,7 @@ curl http://localhost:8081/health
 
 응답:
 
-```json
-{"status":"ok","service":"koreanmate-backend","runtime":"container"}
-```
-
-<img src="./images/09-backend-service-health-success.png" width="800">
+<img src="./images/evidence/backend-service-health-success.png" width="800">
 
 ---
 
@@ -169,11 +165,9 @@ curl http://<ALB_DNS_NAME>/health
 
 응답:
 
-```json
-{"status":"ok","service":"koreanmate-backend","runtime":"container"}
-```
+<img src="./images/evidence/10-alb-ingress-success.png" width="800">
 
-<img src="./images/10-alb-health-success.png" width="800">
+<img src="./images/evidence/10-alb-health-success.png" width="800">
 
 ---
 
@@ -191,7 +185,11 @@ POST /level-test
 
 확인 결과, 세 API 모두 ALB Ingress를 통해 정상 응답했다.
 
-<img src="./images/11-api-verification-success.png" width="800">
+<img src="./images/evidence/11-api-correction-success.png" width="800">
+
+<img src="./images/evidence/11-api-conversation-success.png" width="800">
+
+<img src="./images/evidence/11-api-level-test-success.png" width="800">
 
 ---
 
@@ -205,7 +203,7 @@ kubectl get pods -n argocd
 
 확인 결과, Argo CD Application Controller, Repo Server, Redis, Dex Server, Argo CD Server가 모두 정상 실행되었다.
 
-<img src="./images/12-argocd-pods-running.png" width="800">
+<img src="./images/evidence/12-argocd-pods-running.png" width="800">
 
 ---
 
@@ -226,7 +224,7 @@ Namespace: koreanmate
 
 확인 결과, Argo CD UI에서 `koreanmate-backend` Application이 `Synced` 및 `Healthy` 상태로 표시되었다.
 
-<img src="./images/13-argocd-synced-healthy.png" width="800">
+<img src="./images/evidence/argocd-application-synced-healthy.png" width="800">
 
 ---
 
@@ -240,7 +238,7 @@ kubectl get pods -n monitoring
 
 확인 결과, 모든 monitoring 구성 요소가 `Running` 상태로 실행되었다.
 
-<img src="./images/14-monitoring-pods-running.png" width="800">
+<img src="./images/evidence/monitoring-pods-running.png" width="800">
 
 ---
 
@@ -260,7 +258,7 @@ http://localhost:9090/targets
 
 확인 결과, Grafana 및 Alertmanager targets가 `UP` 상태로 표시되었다.
 
-<img src="./images/15-prometheus-targets-up.png" width="800">
+<img src="./images/evidence/15-prometheus-targets-up.png" width="800">
 
 ---
 
@@ -280,8 +278,9 @@ http://localhost:3002
 
 확인 결과, `argocd`, `monitoring`, `kube-system`, `koreanmate` namespace의 CPU/Memory 사용량이 Grafana dashboard에 표시되었다.
 
-<img src="./images/16-grafana-cluster-dashboard.png" width="800">
+<img src="./images/evidence/16-grafana-cluster-dashboard1.png" width="800">
 
+<img src="./images/evidence/16-grafana-cluster-dashboard2.png" width="800">
 ---
 
 ## 17. Grafana KoreanMate Backend Pod Metrics 확인
@@ -297,7 +296,11 @@ Pod: backend-*
 
 확인 결과, KoreanMate Backend Pod의 CPU usage, memory usage, network receive/transmit metrics가 정상적으로 표시되었다.
 
-<img src="./images/17-grafana-backend-pod-metrics.png" width="800">
+<img src="./images/evidence/17-grafana-backend-pod-metrics1.png" width="800">
+
+<img src="./images/evidence/17-grafana-backend-pod-metrics2.png" width="800">
+
+<img src="./images/evidence/17-grafana-backend-pod-metrics3.png" width="800">
 
 ---
 
