@@ -1,6 +1,7 @@
 # KoreanMate EKS Evidence
 
-> 목적: KoreanMate EKS 버전에서 Kubernetes 기반 배포, GitHub Actions 이미지 빌드, ECR Push, ALB Ingress, IRSA, Argo CD GitOps, Prometheus/Grafana 관측성 구성이 실제로 동작했음을 증명하기 위한 문서다.
+> 목적: KoreanMate EKS 버전에서 Kubernetes 기반 배포, GitHub Actions 이미지 빌드, ECR Push, ALB Ingress, IRSA, Argo CD GitOps, Prometheus/Grafana 관측성 구성이 실제로 동작했음을 증명하기 위한 문서다.                
+
 > 기준 환경: AWS Seoul Region `ap-northeast-2`, EKS `dev` 환경, Terraform 기반 IaC
 
 ---
@@ -308,20 +309,20 @@ Pod: backend-*
 
 이번 EKS 버전에서 검증한 항목은 다음과 같다.
 
-| 영역          | 검증 내용                                               | 상태 |
-| ----------- | --------------------------------------------------- | -- |
-| EKS Cluster | Worker Node Ready 확인                                | 완료 |
-| ECR         | Backend Docker Image Push 확인                        | 완료 |
-| CI/CD       | GitHub Actions Image Build / Push 확인                | 완료 |
-| Security    | Trivy Image Scan 확인                                 | 완료 |
-| IAM         | ALB Controller IRSA 확인                              | 완료 |
-| IAM         | Backend Pod IRSA 확인                                 | 완료 |
-| Kubernetes  | Backend Deployment / Service 확인                     | 완료 |
-| Ingress     | ALB Ingress 외부 접근 확인                                | 완료 |
-| API         | `/correction`, `/conversation`, `/level-test` 호출 성공 | 완료 |
-| GitOps      | Argo CD Synced / Healthy 확인                         | 완료 |
-| Monitoring  | Prometheus Targets UP 확인                            | 완료 |
-| Monitoring  | Grafana Backend Pod Metrics 확인                      | 완료 |
+| 영역          | 검증 내용                                               |
+| ----------- | --------------------------------------------------- | 
+| EKS Cluster | Worker Node Ready 확인                                |
+| ECR         | Backend Docker Image Push 확인                        |
+| CI/CD       | GitHub Actions Image Build / Push 확인                |
+| Security    | Trivy Image Scan 확인                                 | 
+| IAM         | ALB Controller IRSA 확인                              | 
+| IAM         | Backend Pod IRSA 확인                                 | 
+| Kubernetes  | Backend Deployment / Service 확인                     | 
+| Ingress     | ALB Ingress 외부 접근 확인                                | 
+| API         | `/correction`, `/conversation`, `/level-test` 호출 성공 | 
+| GitOps      | Argo CD Synced / Healthy 확인                         | 
+| Monitoring  | Prometheus Targets UP 확인                            | 
+| Monitoring  | Grafana Backend Pod Metrics 확인                      | 
 
 ---
 
@@ -330,9 +331,3 @@ Pod: backend-*
 EKS는 클러스터와 NodeGroup이 존재하는 동안 비용이 지속적으로 발생한다.
 따라서 이 EKS 버전은 상시 운영 목적이 아니라, Kubernetes 운영 역량을 검증하고 증거를 남기기 위한 확장 버전이다.
 
-검증 및 문서화 완료 후에는 다음 중 하나를 수행한다.
-
-```text
-1. NodeGroup desired size를 최소화
-2. EKS 리소스 destroy
-```
