@@ -514,24 +514,7 @@ EKS 장애는 원인이 한 곳에만 있지 않다. 예를 들어 ALB 503은 AL
 
 ---
 
-## 16. Diagram Summary
-
-이 설계서에서 사용하는 다이어그램의 의미는 다음과 같다.
-
-| 다이어그램 | 설명 |
-|---|---|
-| User Flow | 사용자가 Home, Login, Dashboard, 학습 기능 화면으로 이동하는 흐름 |
-| Request Flow | JWT 포함 API 요청이 ALB, Ingress, Service, Backend Pod, AWS Managed Services로 처리되는 흐름 |
-| Architecture Overview | EKS Cluster, Namespace, IRSA, Backend Pod, AWS Managed Services, ECR, Argo CD, Prometheus/Grafana 관계 |
-| CI/CD & GitOps Flow | GitHub Actions의 image build/push와 Argo CD의 manifest sync 관계 |
-
-**왜 다이어그램을 기능별로 분리했는가?**
-
-하나의 그림에 사용자 화면, 네트워크, IAM, CI/CD, GitOps, Monitoring을 모두 넣으면 흐름이 복잡해진다. 그래서 사용자 흐름, API 요청 흐름, 전체 아키텍처, 배포/GitOps 흐름을 분리했다. 이렇게 분리하면 면접에서 질문이 들어왔을 때 “사용자 관점”, “요청 처리 관점”, “운영 아키텍처 관점”, “배포 관점”으로 나누어 설명할 수 있다.
-
----
-
-## 17. Limitations and Future Improvements
+## 16. Limitations and Future Improvements
 
 현재 설계는 EKS `dev` 환경 검증 기준이다. 운영 수준으로 확장하려면 다음 개선이 필요하다.
 
@@ -552,39 +535,6 @@ EKS 장애는 원인이 한 곳에만 있지 않다. 예를 들어 ALB 503은 AL
 
 현재 범위는 EKS 운영 구조를 검증하기 위한 dev 환경이다. HTTPS, HPA, Karpenter, Loki, Canary 배포까지 모두 한 번에 포함하면 범위가 과도하게 커진다. 따라서 현재 설계에서는 핵심 운영 흐름을 먼저 검증하고, 실제 운영 수준의 고도화 항목은 Future Improvements로 분리한다.
 
----
 
-## 18. Evidence Mapping
 
-설계 요소와 Evidence 문서의 검증 항목은 다음과 같이 연결된다.
 
-| 설계 요소 | Evidence 확인 항목 |
-|---|---|
-| EKS Cluster / NodeGroup | `kubectl get nodes` Ready 상태 |
-| ECR Image | `aws ecr describe-images` image digest 확인 |
-| GitHub Actions | Image build workflow 성공 |
-| Trivy Scan | GitHub Actions scan log 확인 |
-| AWS Load Balancer Controller | Controller Pod Running |
-| ALB Controller IRSA | ServiceAccount annotation 확인 |
-| Backend Pod IRSA | IAM Role Trust Policy 확인 |
-| Backend Deployment | Backend Pod Running |
-| Backend Service | port-forward `/health` 성공 |
-| ALB Ingress | ALB DNS 생성 및 `/health` 성공 |
-| Backend APIs | `/correction`, `/conversation`, `/level-test` 성공 |
-| Argo CD | Application `Synced` / `Healthy` 확인 |
-| Prometheus | Targets `UP` 확인 |
-| Grafana | Backend Pod CPU/Memory/Network metrics 확인 |
-
-**왜 Evidence Mapping을 설계서에 포함했는가?**
-
-설계서는 의도를 설명하고, Evidence는 실제 동작을 증명한다. 둘을 연결해두면 각 설계 요소가 어떤 캡처와 명령으로 검증되었는지 추적할 수 있다. 이는 포트폴리오에서 “그림만 그린 설계”가 아니라 실제 구축과 검증이 끝난 설계라는 근거가 된다.
-
----
-
-## 19. References
-
-- Amazon EKS - IAM roles for service accounts: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
-- Amazon EKS - AWS Load Balancer Controller: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
-- AWS Load Balancer Controller documentation: https://kubernetes-sigs.github.io/aws-load-balancer-controller/
-- GitHub Actions - Configuring OpenID Connect in Amazon Web Services: https://docs.github.com/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
-- Argo CD Resource Health: https://argo-cd.readthedocs.io/en/latest/operator-manual/health/
