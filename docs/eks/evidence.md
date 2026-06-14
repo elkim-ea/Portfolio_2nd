@@ -1,6 +1,7 @@
 # KoreanMate EKS Evidence
 
-> 목적: KoreanMate EKS 버전에서 Kubernetes 기반 배포, GitHub Actions 이미지 빌드, ECR Push, ALB Ingress, IRSA, Argo CD GitOps, Prometheus/Grafana 관측성 구성이 실제로 동작했음을 증명하기 위한 캡처 정리 문서다.
+> 목적: KoreanMate EKS 버전에서 Kubernetes 기반 배포, GitHub Actions 이미지 빌드, ECR Push, ALB Ingress, IRSA, Argo CD GitOps, Prometheus/Grafana 관측성 구성이 실제로 동작했음을 증명하기 위한 문서다.                
+
 > 기준 환경: AWS Seoul Region `ap-northeast-2`, EKS `dev` 환경, Terraform 기반 IaC
 
 ---
@@ -15,7 +16,7 @@ kubectl get nodes
 
 확인 결과, Worker Node가 `Ready` 상태로 표시되었다.
 
-<img src="./images/01-eks-nodes-ready.png" width="800">
+<img src="./images/evidence/eks-nodegroup-scaled-to-3.png" width="800">
 
 ---
 
@@ -32,7 +33,7 @@ aws ecr describe-images \
 
 확인 결과, `koreanmate-dev-backend:dev` 이미지가 ECR에 정상적으로 업로드되었고 image digest가 생성되었다.
 
-<img src="./images/02-ecr-image-push-success.png" width="800">
+<img src="./images/evidence/02-ecr-image-push-success.png" width="800">
 
 ---
 
@@ -48,7 +49,7 @@ EKS Backend Image Build
 
 확인 결과, 전체 checks가 통과했고 Backend image build 및 push job이 성공했다.
 
-<img src="./images/03-github-actions-eks-image-build-success.png" width="800">
+<img src="./images/evidence/03-github-actions-eks-image-build-success.png" width="800">
 
 ---
 
@@ -64,7 +65,7 @@ koreanmate-dev-backend:dev
 
 스캔 결과는 GitHub Actions 로그에 남으며, HIGH/CRITICAL 취약점 확인 및 이미지 보안 검증 근거로 사용한다.
 
-<img src="./images/04-trivy-scan-result.png" width="800">
+<img src="./images/evidence/04-trivy-scan-result.png" width="800">
 
 ---
 
@@ -78,7 +79,7 @@ kubectl get pods -n kube-system | grep aws-load-balancer-controller
 
 확인 결과, AWS Load Balancer Controller Pod 2개가 모두 `Running` 상태였다.
 
-<img src="./images/05-alb-controller-running.png" width="800">
+<img src="./images/evidence/05-alb-controller-running.png" width="800">
 
 ---
 
@@ -96,7 +97,7 @@ kubectl describe serviceaccount aws-load-balancer-controller -n kube-system
 eks.amazonaws.com/role-arn: arn:aws:iam::127696278675:role/koreanmate-dev-eks-cluster-aws-load-balancer-controller-role
 ```
 
-<img src="./images/06-alb-controller-irsa.png" width="800">
+<img src="./images/evidence/06-alb-controller-irsa.png" width="800">
 
 ---
 
@@ -115,7 +116,7 @@ aws iam get-role \
 system:serviceaccount:koreanmate:backend
 ```
 
-<img src="./images/07-backend-pod-irsa-role.png" width="800">
+<img src="./images/evidence/07-backend-pod-irsa-role.png" width="800">
 
 ---
 
@@ -129,7 +130,7 @@ kubectl get pods -n koreanmate
 
 확인 결과, Backend Pod가 `Running` 상태로 실행되었다.
 
-<img src="./images/08-backend-pod-running.png" width="800">
+<img src="./images/evidence/08-backend-pod-running.png" width="800">
 
 ---
 
@@ -147,11 +148,7 @@ curl http://localhost:8081/health
 
 응답:
 
-```json
-{"status":"ok","service":"koreanmate-backend","runtime":"container"}
-```
-
-<img src="./images/09-backend-service-health-success.png" width="800">
+<img src="./images/evidence/backend-service-health-success.png" width="800">
 
 ---
 
@@ -169,11 +166,9 @@ curl http://<ALB_DNS_NAME>/health
 
 응답:
 
-```json
-{"status":"ok","service":"koreanmate-backend","runtime":"container"}
-```
+<img src="./images/evidence/10-alb-ingress-success.png" width="800">
 
-<img src="./images/10-alb-health-success.png" width="800">
+<img src="./images/evidence/10-alb-health-success.png" width="800">
 
 ---
 
@@ -191,7 +186,11 @@ POST /level-test
 
 확인 결과, 세 API 모두 ALB Ingress를 통해 정상 응답했다.
 
-<img src="./images/11-api-verification-success.png" width="800">
+<img src="./images/evidence/11-api-correction-success.png" width="800">
+
+<img src="./images/evidence/11-api-conversation-success.png" width="800">
+
+<img src="./images/evidence/11-api-level-test-success.png" width="800">
 
 ---
 
@@ -205,7 +204,7 @@ kubectl get pods -n argocd
 
 확인 결과, Argo CD Application Controller, Repo Server, Redis, Dex Server, Argo CD Server가 모두 정상 실행되었다.
 
-<img src="./images/12-argocd-pods-running.png" width="800">
+<img src="./images/evidence/12-argocd-pods-running.png" width="800">
 
 ---
 
@@ -226,7 +225,7 @@ Namespace: koreanmate
 
 확인 결과, Argo CD UI에서 `koreanmate-backend` Application이 `Synced` 및 `Healthy` 상태로 표시되었다.
 
-<img src="./images/13-argocd-synced-healthy.png" width="800">
+<img src="./images/evidence/argocd-application-synced-healthy.png" width="800">
 
 ---
 
@@ -240,7 +239,7 @@ kubectl get pods -n monitoring
 
 확인 결과, 모든 monitoring 구성 요소가 `Running` 상태로 실행되었다.
 
-<img src="./images/14-monitoring-pods-running.png" width="800">
+<img src="./images/evidence/monitoring-pods-running.png" width="800">
 
 ---
 
@@ -260,7 +259,7 @@ http://localhost:9090/targets
 
 확인 결과, Grafana 및 Alertmanager targets가 `UP` 상태로 표시되었다.
 
-<img src="./images/15-prometheus-targets-up.png" width="800">
+<img src="./images/evidence/15-prometheus-targets-up.png" width="800">
 
 ---
 
@@ -280,8 +279,9 @@ http://localhost:3002
 
 확인 결과, `argocd`, `monitoring`, `kube-system`, `koreanmate` namespace의 CPU/Memory 사용량이 Grafana dashboard에 표시되었다.
 
-<img src="./images/16-grafana-cluster-dashboard.png" width="800">
+<img src="./images/evidence/16-grafana-cluster-dashboard1.png" width="800">
 
+<img src="./images/evidence/16-grafana-cluster-dashboard2.png" width="800">
 ---
 
 ## 17. Grafana KoreanMate Backend Pod Metrics 확인
@@ -297,39 +297,160 @@ Pod: backend-*
 
 확인 결과, KoreanMate Backend Pod의 CPU usage, memory usage, network receive/transmit metrics가 정상적으로 표시되었다.
 
-<img src="./images/17-grafana-backend-pod-metrics.png" width="800">
+<img src="./images/evidence/17-grafana-backend-pod-metrics1.png" width="800">
+
+<img src="./images/evidence/17-grafana-backend-pod-metrics2.png" width="800">
+
+<img src="./images/evidence/17-grafana-backend-pod-metrics3.png" width="800">
 
 ---
 
-## 18. Evidence Summary
+## 18. EKS Cost Cleanup Verification
+
+EKS 검증과 문서화를 완료한 뒤, 지속 비용 발생을 방지하기 위해 EKS 관련 리소스를 삭제했다.
+
+EKS는 클러스터가 존재하는 동안 Control Plane 비용이 발생하고, Worker Node, ALB, EBS Volume, NAT Gateway, ECR Image, CloudWatch Logs 등도 별도 비용을 발생시킬 수 있다. 따라서 이번 EKS 버전은 상시 운영 목적이 아니라, Kubernetes 운영 역량을 검증하고 Evidence를 남긴 뒤 리소스를 정리하는 방식으로 운영했다.
+
+삭제 전에는 먼저 Kubernetes Ingress를 삭제하여 AWS Load Balancer Controller가 ALB를 정리할 수 있도록 했다. 이후 Backend namespace, Argo CD, Monitoring Stack을 정리하고 Terraform destroy를 실행했다.
+
+정리 후 다음 항목을 AWS CLI로 확인했다.
+
+---
+
+### 18.1 EKS Cluster 삭제 확인
+
+```bash
+aws eks list-clusters --region ap-northeast-2
+```
+
+확인 결과, EKS Cluster가 남아 있지 않았다.
+
+```json
+{
+  "clusters": []
+}
+```
+
+---
+
+### 18.2 Application Load Balancer 삭제 확인
+
+```bash
+aws elbv2 describe-load-balancers \
+  --region ap-northeast-2
+```
+
+확인 결과, EKS Ingress에서 생성된 Application Load Balancer가 남아 있지 않았다.
+
+```json
+{
+  "LoadBalancers": []
+}
+```
+
+---
+
+### 18.3 EBS Volume 잔여 리소스 확인
+
+```bash
+aws ec2 describe-volumes \
+  --region ap-northeast-2 \
+  --filters Name=status,Values=available
+```
+
+확인 결과, 삭제 후 남아 있는 `available` 상태의 EBS Volume이 없었다.
+
+```json
+{
+  "Volumes": []
+}
+```
+
+---
+
+### 18.4 NAT Gateway 잔여 리소스 확인
+
+```bash
+aws ec2 describe-nat-gateways \
+  --region ap-northeast-2 \
+  --filter Name=state,Values=available,pending
+```
+
+확인 결과, `available` 또는 `pending` 상태의 NAT Gateway가 없었다.
+
+```json
+{
+  "NatGateways": []
+}
+```
+
+<img src="./images/evidence/20-all-cleanup.png" width="800">
+
+---
+
+### 18.5 ECR Repository 삭제 확인
+
+```bash
+aws ecr describe-repositories \
+  --region ap-northeast-2
+```
+
+확인 결과, EKS Backend Image 저장에 사용했던 ECR Repository가 삭제되었다.
+
+```json
+{
+  "repositories": []
+}
+```
+
+<img src="./images/evidence/20-ecr-repository-deleted.png" width="800">
+
+---
+
+### 18.6 CloudWatch EKS Log Group 삭제 확인
+
+Git Bash 환경에서는 `/aws/eks` 경로가 Windows 경로로 자동 변환될 수 있으므로 `MSYS_NO_PATHCONV=1` 옵션을 사용하여 확인했다.
+
+```bash
+MSYS_NO_PATHCONV=1 aws logs describe-log-groups \
+  --region ap-northeast-2 \
+  --log-group-name-prefix /aws/eks
+```
+
+확인 결과, EKS 관련 CloudWatch Log Group이 남아 있지 않았다.
+
+```json
+{
+  "logGroups": []
+}
+```
+
+<img src="./images/evidence/20-cloudwatch-eks-loggroup-cleanup.png" width="800">
+
+---
+
+## 19. Evidence Summary
 
 이번 EKS 버전에서 검증한 항목은 다음과 같다.
 
-| 영역          | 검증 내용                                               | 상태 |
-| ----------- | --------------------------------------------------- | -- |
-| EKS Cluster | Worker Node Ready 확인                                | 완료 |
-| ECR         | Backend Docker Image Push 확인                        | 완료 |
-| CI/CD       | GitHub Actions Image Build / Push 확인                | 완료 |
-| Security    | Trivy Image Scan 확인                                 | 완료 |
-| IAM         | ALB Controller IRSA 확인                              | 완료 |
-| IAM         | Backend Pod IRSA 확인                                 | 완료 |
-| Kubernetes  | Backend Deployment / Service 확인                     | 완료 |
-| Ingress     | ALB Ingress 외부 접근 확인                                | 완료 |
-| API         | `/correction`, `/conversation`, `/level-test` 호출 성공 | 완료 |
-| GitOps      | Argo CD Synced / Healthy 확인                         | 완료 |
-| Monitoring  | Prometheus Targets UP 확인                            | 완료 |
-| Monitoring  | Grafana Backend Pod Metrics 확인                      | 완료 |
+| 영역           | 검증 내용                                                          |
+| ------------ | -------------------------------------------------------------- |
+| EKS Cluster  | Worker Node Ready 확인                                           |
+| ECR          | Backend Docker Image Push 확인                                   |
+| CI/CD        | GitHub Actions Image Build / Push 확인                           |
+| Security     | Trivy Image Scan 확인                                            |
+| IAM          | ALB Controller IRSA 확인                                         |
+| IAM          | Backend Pod IRSA 확인                                            |
+| Kubernetes   | Backend Deployment / Service 확인                                |
+| Ingress      | ALB Ingress 외부 접근 확인                                           |
+| API          | `/correction`, `/conversation`, `/level-test` 호출 성공            |
+| GitOps       | Argo CD Synced / Healthy 확인                                    |
+| Monitoring   | Prometheus Targets UP 확인                                       |
+| Monitoring   | Grafana Backend Pod Metrics 확인                                 |
+| Cost Control | EKS Cluster, ALB, EBS, NAT Gateway, ECR, CloudWatch Logs 삭제 확인 |
 
----
+이번 검증을 통해 KoreanMate Backend가 EKS 환경에서 컨테이너 기반으로 실행되고, ALB Ingress를 통해 외부 요청을 처리하며, IRSA를 통해 AWS Managed Services에 접근할 수 있음을 확인했다.
 
-## 19. Cost Control Note
+또한 GitHub Actions, ECR, Trivy, Argo CD, Prometheus, Grafana를 통해 이미지 빌드, 보안 스캔, GitOps 배포, Kubernetes 관측성까지 검증했다.
 
-EKS는 클러스터와 NodeGroup이 존재하는 동안 비용이 지속적으로 발생한다.
-따라서 이 EKS 버전은 상시 운영 목적이 아니라, Kubernetes 운영 역량을 검증하고 증거를 남기기 위한 확장 버전이다.
-
-검증 및 문서화 완료 후에는 다음 중 하나를 수행한다.
-
-```text
-1. NodeGroup desired size를 최소화
-2. EKS 리소스 destroy
-```
+검증과 문서화를 완료한 뒤에는 비용 절감을 위해 EKS 관련 리소스를 삭제했고, AWS CLI로 잔여 리소스가 남아 있지 않음을 확인했다.

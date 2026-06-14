@@ -316,14 +316,14 @@ docs/
 ├── overview.md
 ├── serverless/
 │   ├── project-plan.md
-│   ├── architecture.md
+│   ├── serverless-design.md
 │   ├── runbook.md
 │   ├── troubleshooting.md
 │   └── evidence.md
 │
 └── eks/
     ├── project-plan.md
-    ├── architecture.md
+    ├── eks-design.md
     ├── runbook.md
     ├── troubleshooting.md
     ├── evidence.md
@@ -357,12 +357,12 @@ infra/
 | ------------------------------------ | --------------------------------------- |
 | `docs/overview.md`                   | Serverless 버전과 EKS 버전의 관계, 목적, 역할 차이 정리 |
 | `docs/serverless/project-plan.md`    | Serverless 버전의 목적, 요구사항, 범위, 일정 정리      |
-| `docs/serverless/architecture.md`    | Serverless 아키텍처, 요청 흐름, 보안, 비용, 관측성 설계  |
+| `docs/serverless/serverless-design.md`    | Serverless 아키텍처, 요청 흐름, 보안, 비용, 관측성 설계  |
 | `docs/serverless/runbook.md`         | Serverless 운영 장애 대응 절차                  |
 | `docs/serverless/troubleshooting.md` | Serverless 구축 중 실제 문제와 해결 과정            |
 | `docs/serverless/evidence.md`        | Serverless 검증 캡처 정리                     |
 | `docs/eks/project-plan.md`           | EKS 버전의 목적, 요구사항, 범위, 일정 정리             |
-| `docs/eks/architecture.md`           | EKS 아키텍처, GitOps, IRSA, Monitoring 설계   |
+| `docs/eks/eks-design.md`           | EKS 아키텍처, GitOps, IRSA, Monitoring 설계   |
 | `docs/eks/runbook.md`                | EKS 운영 장애 대응 절차                         |
 | `docs/eks/troubleshooting.md`        | EKS 구축 중 실제 문제와 해결 과정                   |
 | `docs/eks/evidence.md`               | EKS 검증 캡처 정리                            |
