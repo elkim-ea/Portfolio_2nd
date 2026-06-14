@@ -1,0 +1,18 @@
+[
+    {
+        "imageDigest": "sha256:14257feadfabd80c2296e9b70a7fdb33d73112271ba25993a5122137807d6eba"
+    },
+    {
+        "imageDigest": "sha256:fae7c8189cd953d9b6503694a8860cddae49d1a78833eab5d494491bd3320db3"
+    },
+    {
+        "imageDigest": "sha256:37429f55b4ba195bc229c552e75ef1468c6face1474193ecf8c8ea183a309c08"
+    },
+    {
+        "imageDigest": "sha256:225904a198348ded93f901d827f0f6b04b2056512e5942261b47187bb6823b5c"
+    },
+    {
+        "imageDigest": "sha256:b4885d8ab628412f460e8f186b522095f28884292ccd1f59b10835b8a89a663c",
+        "imageTag": "dev"
+    }
+]
