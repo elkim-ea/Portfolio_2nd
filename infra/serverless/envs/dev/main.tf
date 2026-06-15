@@ -277,6 +277,17 @@ module "cognito" {
   environment  = var.environment
   aws_region   = var.aws_region
 
+  callback_urls = [
+    "http://localhost:5173",
+    "https://${module.s3_cloudfront.cloudfront_domain_name}",
+    "https://${module.s3_cloudfront.cloudfront_domain_name}/dashboard"
+  ]
+
+  logout_urls = [
+    "http://localhost:5173",
+    "https://${module.s3_cloudfront.cloudfront_domain_name}"
+  ]
+
   tags = local.common_tags
 }
 
