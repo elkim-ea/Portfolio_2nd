@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useOutletContext } from "react-router";
 import type { LearningLevel } from "../types/learningRecord";
 import type { ExplanationLanguage } from "../types/userProfile";
 import Card from "../components/common/Card";
@@ -9,6 +10,7 @@ import Badge from "../components/common/Badge";
 import type { CorrectionApiResponse } from "../types/aiResult";
 import { requestCorrection } from "../api/correctionApi";
 import { LEARNING_LEVEL_OPTIONS } from "../constants/learningLevels";
+import type { AppLayoutContext } from "../layouts/AppLayout";
 
 const getExplanationTitle = (language: ExplanationLanguage) => {
   if (language === "ko") {
@@ -23,6 +25,7 @@ const getExplanationTitle = (language: ExplanationLanguage) => {
 };
 
 export default function CorrectionPage() {
+  const { refreshUsage } = useOutletContext<AppLayoutContext>();
   const [inputText, setInputText] = useState("");
   const [selectedLevel, setSelectedLevel] =
     useState<LearningLevel>("a2");
@@ -52,6 +55,7 @@ export default function CorrectionPage() {
       });
 
       setResult(data);
+      await refreshUsage();
     } catch (error) {
       console.error("Failed to request correction:", error);
       setErrorMessage(

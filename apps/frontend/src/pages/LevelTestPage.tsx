@@ -8,10 +8,12 @@ import type { LevelTestApiResponse } from "../types/aiResult";
 import { requestLevelTest } from "../api/levelTestApi";
 import { updateProfile } from "../api/profileApi";
 import { normalizeLearningLevel } from "../constants/learningLevels";
-
+import { useOutletContext } from "react-router";
+import type { AppLayoutContext } from "../layouts/AppLayout";
 
 
 export default function LevelTestPage() {
+  const { refreshUsage, refreshProfile } = useOutletContext<AppLayoutContext>();
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<LevelTestApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +39,8 @@ export default function LevelTestPage() {
       });
 
       setResult(data);
+      await refreshUsage();
+      await refreshProfile();
     } catch (error) {
       console.error("Failed to request level test:", error);
       setErrorMessage(

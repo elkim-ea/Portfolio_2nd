@@ -7,7 +7,7 @@ export type UsageApiResponse = {
 };
 
 export function getUsage(): Promise<UsageApiResponse> {
-  return apiRequest<UsageApiResponse>("/usage", {
+  return apiRequest<UsageApiResponse>(`/usage?ts=${Date.now()}`, {
     method: "GET",
   });
 }

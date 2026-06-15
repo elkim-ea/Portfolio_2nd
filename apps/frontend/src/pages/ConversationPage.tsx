@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router";
 import type { LearningLevel } from "../types/learningRecord";
 import type { ConversationTone } from "../types/userProfile";
 import Card from "../components/common/Card";
@@ -8,8 +9,11 @@ import Badge from "../components/common/Badge";
 import type { ConversationApiResponse } from "../types/aiResult";
 import { requestConversation } from "../api/conversationApi";
 import { LEARNING_LEVEL_OPTIONS } from "../constants/learningLevels";
+import type { AppLayoutContext } from "../layouts/AppLayout";
 
 export default function ConversationPage() {
+  const { refreshUsage } = useOutletContext<AppLayoutContext>();
+
   const [topic, setTopic] = useState("ordering food at a restaurant");
   const [selectedLevel, setSelectedLevel] =
     useState<LearningLevel>("a2");
@@ -61,6 +65,7 @@ export default function ConversationPage() {
       });
 
       setResult(data);
+      await refreshUsage();
     } catch (error) {
       console.error("Failed to request conversation:", error);
       setErrorMessage(
