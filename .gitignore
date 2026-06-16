@@ -21,6 +21,7 @@ node_modules/
 
 # 대본
 docs/serverless/presentation-script.*
+docs/eks/presentation-script.*
 docs/serverless/later-plan.*
 
 # ko
@@ -29,3 +30,13 @@ docs/serverless/serverless-design.ko.*
 docs/serverless/runbook.ko.*
 docs/serverless/troubleshooting.ko.*
 docs/overview.ko.*
+docs/serverless/evidence.ko.*
+docs/serverless/eks-design.ko.*
+
+docs/eks/project-plan.ko.*
+docs/eks/serverless-design.ko.*
+docs/eks/runbook.ko.*
+docs/eks/troubleshooting.ko.*
+docs/overview.ko.*
+docs/eks/evidence.ko.*
+docs/eks/eks-design.ko.*

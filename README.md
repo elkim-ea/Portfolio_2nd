@@ -313,3 +313,5 @@ The Serverless version shows how to build and operate a practical AI web applica
 The EKS version shows how the same backend can be containerized, deployed to Kubernetes, secured with IRSA, managed with GitOps, scanned with Trivy, and monitored with Prometheus/Grafana.
 
 This project is designed as a cloud and DevOps engineering portfolio with practical documentation, operational evidence, and cost-aware infrastructure decisions.
+
+
