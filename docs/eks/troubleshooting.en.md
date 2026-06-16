@@ -619,8 +619,7 @@ This issue showed that EKS operations require checking not only CPU and memory, 
 
 # Summary
 
-```text
 While building the EKS version, I resolved issues related to missing Backend Pod environment variables, insufficient GitHub Actions OIDC/ECR permissions, missing Argo CD Redis Secret, and Pod capacity limits on t3.small nodes.
 
 These were not just simple error fixes. They were documented from the perspective of Kubernetes environment variable management, GitHub Actions OIDC authentication, ECR permission design, Kubernetes Secret references, and EKS node scheduling limits.
-```
+

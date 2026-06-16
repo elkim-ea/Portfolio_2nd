@@ -420,6 +420,5 @@ In this case, the Metrics API succeeded, so the trust policy and External ID wer
 
 # Summary
 
-```text
 During this project, I resolved several operational issues: GitHub Actions apply failures caused by missing Terraform remote state, remaining development user ID fallback after applying Cognito, CloudTrail KMS findings detected by Trivy IaC scanning, and missing CloudWatch Logs permissions during Grafana Cloud integration. These were not just simple bug fixes. They were documented from an operational perspective: state management, authenticated user data isolation, security scan-driven infrastructure improvement, and external observability SaaS integration.
-```
+
